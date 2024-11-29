@@ -5,15 +5,17 @@ class FindProductView: UIView {
     private let backgroundView = BackgroundView()
     private let headerView = HeaderView(title: "Find Product")
     
-    private lazy var topView: UIView = {
-        let view = UIView()
-        view.backgroundColor = SOLUM_COLOR
-        return view
-    }()
-
+    var onAisleGuideImageViewTapped: (() -> Void)?
+    private let aisleGuideImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFit
+        $0.image = UIImage(named: "ic_aisleGuide")
+        $0.isUserInteractionEnabled = true
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
+        setupActions()
         bindActions()
     }
 
@@ -40,5 +42,14 @@ class FindProductView: UIView {
             print("Back button tapped in FindProductView")
             // Add more behavior as needed, e.g., callback to a parent view or controller
         }
+    }
+    
+    private func setupActions() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(aisleGuideImageViewTapped))
+        aisleGuideImageView.addGestureRecognizer(tapGesture)
+    }
+        
+    @objc private func aisleGuideImageViewTapped() {
+        onAisleGuideImageViewTapped?()
     }
 }
