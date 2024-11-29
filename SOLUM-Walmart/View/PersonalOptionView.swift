@@ -52,6 +52,7 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
         $0.image = UIImage(named: "ic_done")
         $0.isUserInteractionEnabled = true
     }
+    var isDoneTapped: Bool = false
     
     let cellItemImageNames = ["vegan", "gluten", "allergent", "soy",
                               "sugar", "preservatives", "wheat", "corn",
@@ -135,12 +136,20 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
     
     @objc private func doneImageViewTapped() {
         UIView.animate(withDuration: 0.1, animations: {
-            self.doneImageView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96) // Shrink to 90%
+            self.doneImageView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
         }, completion: { _ in
             UIView.animate(withDuration: 0.1) {
-                self.doneImageView.transform = .identity // Reset to original scale
+                self.doneImageView.transform = .identity
             }
         })
+        
+        if isDoneTapped {
+            isDoneTapped = false
+            doneImageView.image = UIImage(named: "ic_done")
+        } else {
+            isDoneTapped = true
+            doneImageView.image = UIImage(named: "ic_done_disable")
+        }
         
         onDoneImageViewTapped?()
     }
