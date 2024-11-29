@@ -1,0 +1,745 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4D5EFEBF068BD1D37B2366DC /* Pods_SOLUM_WalmartTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B60F6FA098356A93328CE9 /* Pods_SOLUM_WalmartTests.framework */; };
+		726CEADAEA14A0235A2FA142 /* Pods_SOLUM_Walmart_SOLUM_WalmartUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C253801A967A6AE82DC8BFAD /* Pods_SOLUM_Walmart_SOLUM_WalmartUITests.framework */; };
+		A3F5181D831BFAFB5E247055 /* Pods_SOLUM_Walmart.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0846675972CFBF84C7D8C1A1 /* Pods_SOLUM_Walmart.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B37D3C8D2CF94C630079E010 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B37D3C6E2CF94C600079E010 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B37D3C752CF94C600079E010;
+			remoteInfo = "SOLUM-Walmart";
+		};
+		B37D3C972CF94C630079E010 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B37D3C6E2CF94C600079E010 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B37D3C752CF94C600079E010;
+			remoteInfo = "SOLUM-Walmart";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0846675972CFBF84C7D8C1A1 /* Pods_SOLUM_Walmart.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SOLUM_Walmart.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1594B303C3B936F7AF671B49 /* Pods-SOLUM-Walmart-SOLUM-WalmartUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SOLUM-Walmart-SOLUM-WalmartUITests.debug.xcconfig"; path = "Target Support Files/Pods-SOLUM-Walmart-SOLUM-WalmartUITests/Pods-SOLUM-Walmart-SOLUM-WalmartUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		18D4AFC5344F22C85E8BEA45 /* Pods-SOLUM-WalmartTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SOLUM-WalmartTests.debug.xcconfig"; path = "Target Support Files/Pods-SOLUM-WalmartTests/Pods-SOLUM-WalmartTests.debug.xcconfig"; sourceTree = "<group>"; };
+		1E668D215B1CAB028425DC6D /* Pods-SOLUM-Walmart-SOLUM-WalmartUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SOLUM-Walmart-SOLUM-WalmartUITests.release.xcconfig"; path = "Target Support Files/Pods-SOLUM-Walmart-SOLUM-WalmartUITests/Pods-SOLUM-Walmart-SOLUM-WalmartUITests.release.xcconfig"; sourceTree = "<group>"; };
+		32B69A6FCD9BE95CCD6E527E /* Pods-SOLUM-WalmartTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SOLUM-WalmartTests.release.xcconfig"; path = "Target Support Files/Pods-SOLUM-WalmartTests/Pods-SOLUM-WalmartTests.release.xcconfig"; sourceTree = "<group>"; };
+		46B52BF7C3CCB1584EF2765A /* Pods-SOLUM-Walmart.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SOLUM-Walmart.release.xcconfig"; path = "Target Support Files/Pods-SOLUM-Walmart/Pods-SOLUM-Walmart.release.xcconfig"; sourceTree = "<group>"; };
+		B16DE1E2B9A2DCADCED6A1CA /* Pods-SOLUM-Walmart.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SOLUM-Walmart.debug.xcconfig"; path = "Target Support Files/Pods-SOLUM-Walmart/Pods-SOLUM-Walmart.debug.xcconfig"; sourceTree = "<group>"; };
+		B37D3C762CF94C600079E010 /* SOLUM-Walmart.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SOLUM-Walmart.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B37D3C8C2CF94C630079E010 /* SOLUM-WalmartTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SOLUM-WalmartTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B37D3C962CF94C630079E010 /* SOLUM-WalmartUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SOLUM-WalmartUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C253801A967A6AE82DC8BFAD /* Pods_SOLUM_Walmart_SOLUM_WalmartUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SOLUM_Walmart_SOLUM_WalmartUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3B60F6FA098356A93328CE9 /* Pods_SOLUM_WalmartTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SOLUM_WalmartTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B37D3C9E2CF94C630079E010 /* Exceptions for "SOLUM-Walmart" folder in "SOLUM-Walmart" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B37D3C752CF94C600079E010 /* SOLUM-Walmart */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		B37D3C782CF94C600079E010 /* SOLUM-Walmart */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B37D3C9E2CF94C630079E010 /* Exceptions for "SOLUM-Walmart" folder in "SOLUM-Walmart" target */,
+			);
+			path = "SOLUM-Walmart";
+			sourceTree = "<group>";
+		};
+		B37D3C8F2CF94C630079E010 /* SOLUM-WalmartTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "SOLUM-WalmartTests";
+			sourceTree = "<group>";
+		};
+		B37D3C992CF94C630079E010 /* SOLUM-WalmartUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "SOLUM-WalmartUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B37D3C732CF94C600079E010 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A3F5181D831BFAFB5E247055 /* Pods_SOLUM_Walmart.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B37D3C892CF94C630079E010 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4D5EFEBF068BD1D37B2366DC /* Pods_SOLUM_WalmartTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B37D3C932CF94C630079E010 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				726CEADAEA14A0235A2FA142 /* Pods_SOLUM_Walmart_SOLUM_WalmartUITests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1CBCEA4E3E93065ADAD2BDFB /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				B16DE1E2B9A2DCADCED6A1CA /* Pods-SOLUM-Walmart.debug.xcconfig */,
+				46B52BF7C3CCB1584EF2765A /* Pods-SOLUM-Walmart.release.xcconfig */,
+				1594B303C3B936F7AF671B49 /* Pods-SOLUM-Walmart-SOLUM-WalmartUITests.debug.xcconfig */,
+				1E668D215B1CAB028425DC6D /* Pods-SOLUM-Walmart-SOLUM-WalmartUITests.release.xcconfig */,
+				18D4AFC5344F22C85E8BEA45 /* Pods-SOLUM-WalmartTests.debug.xcconfig */,
+				32B69A6FCD9BE95CCD6E527E /* Pods-SOLUM-WalmartTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		5617C2EEEE243EC762A4C60A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0846675972CFBF84C7D8C1A1 /* Pods_SOLUM_Walmart.framework */,
+				C253801A967A6AE82DC8BFAD /* Pods_SOLUM_Walmart_SOLUM_WalmartUITests.framework */,
+				F3B60F6FA098356A93328CE9 /* Pods_SOLUM_WalmartTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B37D3C6D2CF94C600079E010 = {
+			isa = PBXGroup;
+			children = (
+				B37D3C782CF94C600079E010 /* SOLUM-Walmart */,
+				B37D3C8F2CF94C630079E010 /* SOLUM-WalmartTests */,
+				B37D3C992CF94C630079E010 /* SOLUM-WalmartUITests */,
+				B37D3C772CF94C600079E010 /* Products */,
+				1CBCEA4E3E93065ADAD2BDFB /* Pods */,
+				5617C2EEEE243EC762A4C60A /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		B37D3C772CF94C600079E010 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B37D3C762CF94C600079E010 /* SOLUM-Walmart.app */,
+				B37D3C8C2CF94C630079E010 /* SOLUM-WalmartTests.xctest */,
+				B37D3C962CF94C630079E010 /* SOLUM-WalmartUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B37D3C752CF94C600079E010 /* SOLUM-Walmart */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B37D3C9F2CF94C630079E010 /* Build configuration list for PBXNativeTarget "SOLUM-Walmart" */;
+			buildPhases = (
+				C2AECABD118E59E4A1F11407 /* [CP] Check Pods Manifest.lock */,
+				B37D3C722CF94C600079E010 /* Sources */,
+				B37D3C732CF94C600079E010 /* Frameworks */,
+				B37D3C742CF94C600079E010 /* Resources */,
+				2C144563BA996C34BB6701EF /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B37D3C782CF94C600079E010 /* SOLUM-Walmart */,
+			);
+			name = "SOLUM-Walmart";
+			productName = "SOLUM-Walmart";
+			productReference = B37D3C762CF94C600079E010 /* SOLUM-Walmart.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B37D3C8B2CF94C630079E010 /* SOLUM-WalmartTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B37D3CA42CF94C630079E010 /* Build configuration list for PBXNativeTarget "SOLUM-WalmartTests" */;
+			buildPhases = (
+				2AA8AF790905527514A05DDA /* [CP] Check Pods Manifest.lock */,
+				B37D3C882CF94C630079E010 /* Sources */,
+				B37D3C892CF94C630079E010 /* Frameworks */,
+				B37D3C8A2CF94C630079E010 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B37D3C8E2CF94C630079E010 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B37D3C8F2CF94C630079E010 /* SOLUM-WalmartTests */,
+			);
+			name = "SOLUM-WalmartTests";
+			productName = "SOLUM-WalmartTests";
+			productReference = B37D3C8C2CF94C630079E010 /* SOLUM-WalmartTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B37D3C952CF94C630079E010 /* SOLUM-WalmartUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B37D3CA72CF94C630079E010 /* Build configuration list for PBXNativeTarget "SOLUM-WalmartUITests" */;
+			buildPhases = (
+				10582C0E45591738CF2513F2 /* [CP] Check Pods Manifest.lock */,
+				B37D3C922CF94C630079E010 /* Sources */,
+				B37D3C932CF94C630079E010 /* Frameworks */,
+				B37D3C942CF94C630079E010 /* Resources */,
+				CD7ED787C6FCFF430F242271 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B37D3C982CF94C630079E010 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B37D3C992CF94C630079E010 /* SOLUM-WalmartUITests */,
+			);
+			name = "SOLUM-WalmartUITests";
+			productName = "SOLUM-WalmartUITests";
+			productReference = B37D3C962CF94C630079E010 /* SOLUM-WalmartUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B37D3C6E2CF94C600079E010 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1610;
+				LastUpgradeCheck = 1610;
+				TargetAttributes = {
+					B37D3C752CF94C600079E010 = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					B37D3C8B2CF94C630079E010 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = B37D3C752CF94C600079E010;
+					};
+					B37D3C952CF94C630079E010 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = B37D3C752CF94C600079E010;
+					};
+				};
+			};
+			buildConfigurationList = B37D3C712CF94C600079E010 /* Build configuration list for PBXProject "SOLUM-Walmart" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B37D3C6D2CF94C600079E010;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = B37D3C772CF94C600079E010 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B37D3C752CF94C600079E010 /* SOLUM-Walmart */,
+				B37D3C8B2CF94C630079E010 /* SOLUM-WalmartTests */,
+				B37D3C952CF94C630079E010 /* SOLUM-WalmartUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B37D3C742CF94C600079E010 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B37D3C8A2CF94C630079E010 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B37D3C942CF94C630079E010 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		10582C0E45591738CF2513F2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SOLUM-Walmart-SOLUM-WalmartUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2AA8AF790905527514A05DDA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SOLUM-WalmartTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2C144563BA996C34BB6701EF /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SOLUM-Walmart/Pods-SOLUM-Walmart-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SOLUM-Walmart/Pods-SOLUM-Walmart-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SOLUM-Walmart/Pods-SOLUM-Walmart-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C2AECABD118E59E4A1F11407 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SOLUM-Walmart-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CD7ED787C6FCFF430F242271 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SOLUM-Walmart-SOLUM-WalmartUITests/Pods-SOLUM-Walmart-SOLUM-WalmartUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SOLUM-Walmart-SOLUM-WalmartUITests/Pods-SOLUM-Walmart-SOLUM-WalmartUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SOLUM-Walmart-SOLUM-WalmartUITests/Pods-SOLUM-Walmart-SOLUM-WalmartUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B37D3C722CF94C600079E010 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B37D3C882CF94C630079E010 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B37D3C922CF94C630079E010 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B37D3C8E2CF94C630079E010 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B37D3C752CF94C600079E010 /* SOLUM-Walmart */;
+			targetProxy = B37D3C8D2CF94C630079E010 /* PBXContainerItemProxy */;
+		};
+		B37D3C982CF94C630079E010 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B37D3C752CF94C600079E010 /* SOLUM-Walmart */;
+			targetProxy = B37D3C972CF94C630079E010 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		B37D3CA02CF94C630079E010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B16DE1E2B9A2DCADCED6A1CA /* Pods-SOLUM-Walmart.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G75UAV755N;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SOLUM-Walmart/Info.plist";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "이 앱은 블루투스 신호를 이용하여 사용자에게 위치 정보를 제공합니다.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "이 앱은 블루투스 신호를 이용하여 사용자에게 위치 정보를 제공합니다.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "실내 위치 정보를 제공하기 위해 권한이 필요합니다.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Allow my app to access motion usage.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = SplashViewController;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tjlabscorp.ios.SOLUM-Walmart";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B37D3CA12CF94C630079E010 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 46B52BF7C3CCB1584EF2765A /* Pods-SOLUM-Walmart.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G75UAV755N;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SOLUM-Walmart/Info.plist";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "이 앱은 블루투스 신호를 이용하여 사용자에게 위치 정보를 제공합니다.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "이 앱은 블루투스 신호를 이용하여 사용자에게 위치 정보를 제공합니다.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "실내 위치 정보를 제공하기 위해 권한이 필요합니다.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Allow my app to access motion usage.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = SplashViewController;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tjlabscorp.ios.SOLUM-Walmart";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		B37D3CA22CF94C630079E010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		B37D3CA32CF94C630079E010 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B37D3CA52CF94C630079E010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 18D4AFC5344F22C85E8BEA45 /* Pods-SOLUM-WalmartTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G75UAV755N;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tjlabscorp.ios.SOLUM-WalmartTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SOLUM-Walmart.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SOLUM-Walmart";
+			};
+			name = Debug;
+		};
+		B37D3CA62CF94C630079E010 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 32B69A6FCD9BE95CCD6E527E /* Pods-SOLUM-WalmartTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G75UAV755N;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tjlabscorp.ios.SOLUM-WalmartTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SOLUM-Walmart.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SOLUM-Walmart";
+			};
+			name = Release;
+		};
+		B37D3CA82CF94C630079E010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1594B303C3B936F7AF671B49 /* Pods-SOLUM-Walmart-SOLUM-WalmartUITests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G75UAV755N;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tjlabscorp.ios.SOLUM-WalmartUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "SOLUM-Walmart";
+			};
+			name = Debug;
+		};
+		B37D3CA92CF94C630079E010 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1E668D215B1CAB028425DC6D /* Pods-SOLUM-Walmart-SOLUM-WalmartUITests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G75UAV755N;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tjlabscorp.ios.SOLUM-WalmartUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "SOLUM-Walmart";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B37D3C712CF94C600079E010 /* Build configuration list for PBXProject "SOLUM-Walmart" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B37D3CA22CF94C630079E010 /* Debug */,
+				B37D3CA32CF94C630079E010 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B37D3C9F2CF94C630079E010 /* Build configuration list for PBXNativeTarget "SOLUM-Walmart" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B37D3CA02CF94C630079E010 /* Debug */,
+				B37D3CA12CF94C630079E010 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B37D3CA42CF94C630079E010 /* Build configuration list for PBXNativeTarget "SOLUM-WalmartTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B37D3CA52CF94C630079E010 /* Debug */,
+				B37D3CA62CF94C630079E010 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B37D3CA72CF94C630079E010 /* Build configuration list for PBXNativeTarget "SOLUM-WalmartUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B37D3CA82CF94C630079E010 /* Debug */,
+				B37D3CA92CF94C630079E010 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B37D3C6E2CF94C600079E010 /* Project object */;
+}
