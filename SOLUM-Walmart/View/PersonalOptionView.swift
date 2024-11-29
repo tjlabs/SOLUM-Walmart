@@ -25,13 +25,12 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
         view.backgroundColor = UIColor(hex: "#D9D9D9")
         view.alpha = 0.5
         
-        view.layer.borderColor = UIColor(hex: "#FFFFFF").cgColor
-        view.layer.borderWidth = 1.0
+        view.borderColor = UIColor(hex: "#FFFFFF")
+        view.borderWidth = 1.0
         
         return view
     }()
     
-    // CollectionView setup
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 0
@@ -55,7 +54,7 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
     }
     
     let cellItemImageNames = ["vegan", "gluten", "allergent", "soy",
-                              "suger", "preservatives", "wheat", "corn",
+                              "sugar", "preservatives", "wheat", "corn",
                               "gmo", "milk", "colours", "probiotics",
                               "containstaurine", "hypoallergenic", "vitamins", "proteins",
                               "highfiber", "lowcalories"]
@@ -91,7 +90,6 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
         }
         
         addSubview(refreshLabel)
-//        refreshLabel.backgroundColor = .red
         refreshLabel.snp.makeConstraints { make in
             make.height.equalTo(40)
             make.width.equalTo(100)
@@ -113,13 +111,12 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
             make.bottom.equalTo(doneImageView.snp.top).offset(-10)
         }
         
-//        containerView.addSubview(collectionView)
-//        collectionView.snp.makeConstraints { make in
-//            make.top.equalToSuperview().inset(1)
-//            make.leading.trailing.equalToSuperview().inset(1)
-//            make.bottom.equalToSuperview().inset(21)
-//            make.top.bottom.leading.trailing.equalToSuperview()
-//        }
+        containerView.addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(1)
+            make.leading.trailing.equalToSuperview().inset(1)
+            make.bottom.equalTo(containerView.snp.bottom).inset(30)
+        }
     }
     
     private func bindActions() {
@@ -158,7 +155,7 @@ extension PersonalOptionView {
         var labelText = ""
         
         if index < cellItemImageNames.count {
-            imageName = "ic_\(index+1)_\(cellItemImageNames[index])"
+            imageName = "ic_option_\(index+1)_\(cellItemImageNames[index])"
             labelText = cellItemLabelNames[index]
         }
         
@@ -170,6 +167,7 @@ extension PersonalOptionView {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width/4
         let height = collectionView.frame.height/5
+//        print("Cell Size : w = \(width) , h = \(height)")
         return CGSize(width: width, height: height)
     }
 }
