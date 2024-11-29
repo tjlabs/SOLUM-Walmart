@@ -12,6 +12,10 @@ class HeaderView: UIView {
     private var title: String?
     
     var onBackImageViewTapped: (() -> Void)?
+    var onSearchImageViewTapped: (() -> Void)?
+    var onCartImageViewTapped: (() -> Void)?
+    var onPersonImageViewTapped: (() -> Void)?
+    var onMenuImageViewTapped: (() -> Void)?
     
     private let backImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
@@ -22,6 +26,7 @@ class HeaderView: UIView {
     private let searchImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "ic_search")
+        $0.isUserInteractionEnabled = true
     }
     
     private let cartImageView = UIImageView().then {
@@ -29,6 +34,7 @@ class HeaderView: UIView {
         if let image = UIImage(named: "ic_cart") {
             $0.image = image.withAlignmentRectInsets(UIEdgeInsets(top: -2, left: -2, bottom: -2, right: -2))
         }
+        $0.isUserInteractionEnabled = true
     }
     
     private let cartCountView: UIView = {
@@ -52,11 +58,13 @@ class HeaderView: UIView {
         if let image = UIImage(named: "ic_person") {
             $0.image = image.withAlignmentRectInsets(UIEdgeInsets(top: -2, left: -2, bottom: -2, right: -2))
         }
+        $0.isUserInteractionEnabled = true
     }
     
     private let menuImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "ic_menu")
+        $0.isUserInteractionEnabled = true
     }
     
     private let titleLabel = UILabel().then {
@@ -142,10 +150,38 @@ class HeaderView: UIView {
     private func setupActions() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backImageViewTapped))
         backImageView.addGestureRecognizer(tapGesture)
+        
+        let tapSearch = UITapGestureRecognizer(target: self, action: #selector(searchImageViewTapped))
+        searchImageView.addGestureRecognizer(tapSearch)
+        
+        let tapCart = UITapGestureRecognizer(target: self, action: #selector(cartImageViewTapped))
+        cartImageView.addGestureRecognizer(tapCart)
+        
+        let tapPerson = UITapGestureRecognizer(target: self, action: #selector(personImageViewTapped))
+        personImageView.addGestureRecognizer(tapPerson)
+        
+        let tapMenu = UITapGestureRecognizer(target: self, action: #selector(menuImageViewTapped))
+        menuImageView.addGestureRecognizer(tapMenu)
     }
         
     @objc private func backImageViewTapped() {
         onBackImageViewTapped?()
+    }
+    
+    @objc private func searchImageViewTapped() {
+        onSearchImageViewTapped?()
+    }
+    
+    @objc private func cartImageViewTapped() {
+        onCartImageViewTapped?()
+    }
+    
+    @objc private func personImageViewTapped() {
+        onPersonImageViewTapped?()
+    }
+    
+    @objc private func menuImageViewTapped() {
+        onMenuImageViewTapped?()
     }
 }
 

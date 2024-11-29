@@ -2,7 +2,14 @@ import UIKit
 import SnapKit
 
 class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    var onBackTapped: (() -> Void)?
+    var onSearchTapped: (() -> Void)?
+    var onCartTappedInPersonalOptionView: (() -> Void)?
+    var onPersonTapped: (() -> Void)?
+    var onMenuTapped: (() -> Void)?
+    
     private let backgroundView = BackgroundView()
+    
     private let headerView = HeaderView(title: "Personal Option")
     private let solumImageView: UIImageView = {
         let imageView = UIImageView()
@@ -90,6 +97,13 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
             make.top.equalTo(self.safeAreaLayoutGuide.snp.top)
         }
         
+        addSubview(solumImageView)
+        solumImageView.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+            make.left.trailing.equalToSuperview()
+            make.height.equalTo(120)
+        }
+        
         addSubview(refreshLabel)
         refreshLabel.snp.makeConstraints { make in
             make.height.equalTo(40)
@@ -122,7 +136,23 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
     
     private func bindActions() {
         headerView.onBackImageViewTapped = { [weak self] in
-            print("Back button tapped in PersonalOptionView")
+            self?.onBackTapped?()
+        }
+        
+        headerView.onSearchImageViewTapped = { [weak self] in
+            self?.onSearchTapped?()
+        }
+        
+        headerView.onCartImageViewTapped = { [weak self] in
+            self?.onCartTappedInPersonalOptionView?()
+        }
+        
+        headerView.onPersonImageViewTapped = { [weak self] in
+            self?.onPersonTapped?()
+        }
+        
+        headerView.onMenuImageViewTapped = { [weak self] in
+            self?.onMenuTapped?()
         }
     }
     
