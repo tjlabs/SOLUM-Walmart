@@ -81,6 +81,14 @@ class CartView: UIView {
     }
         
     @objc private func findProductImageViewTapped() {
+        UIView.animate(withDuration: 0.1, animations: {
+            self.findProductImageView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96) // Shrink to 90%
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.findProductImageView.transform = .identity // Reset to original scale
+            }
+        })
+        
         onFindProductImageViewTapped?()
     }
 }

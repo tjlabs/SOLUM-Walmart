@@ -134,7 +134,14 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
     }
     
     @objc private func doneImageViewTapped() {
-        print("Done Tapped")
+        UIView.animate(withDuration: 0.1, animations: {
+            self.doneImageView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96) // Shrink to 90%
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.doneImageView.transform = .identity // Reset to original scale
+            }
+        })
+        
         onDoneImageViewTapped?()
     }
     
@@ -167,7 +174,6 @@ extension PersonalOptionView {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width/4
         let height = collectionView.frame.height/5
-//        print("Cell Size : w = \(width) , h = \(height)")
         return CGSize(width: width, height: height)
     }
 }

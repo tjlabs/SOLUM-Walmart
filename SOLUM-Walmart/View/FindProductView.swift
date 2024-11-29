@@ -50,6 +50,14 @@ class FindProductView: UIView {
     }
         
     @objc private func aisleGuideImageViewTapped() {
+        UIView.animate(withDuration: 0.1, animations: {
+            self.aisleGuideImageView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96) // Shrink to 90%
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.aisleGuideImageView.transform = .identity // Reset to original scale
+            }
+        })
+        
         onAisleGuideImageViewTapped?()
     }
 }
