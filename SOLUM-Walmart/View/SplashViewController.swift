@@ -18,6 +18,7 @@ class SplashViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLaytout()
+        moveToMain()
         
     }
     
@@ -36,6 +37,7 @@ class SplashViewController: UIViewController {
     }
     
     private func moveToMain() {
+        sleep(3)
         UIView.animate(withDuration: 1.0, delay: 1.5, options: .curveEaseOut, animations: {
         }, completion: { finished in
             let Storyboard = UIStoryboard.init(name: "Main", bundle: nil)
