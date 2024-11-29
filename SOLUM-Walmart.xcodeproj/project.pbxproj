@@ -10,6 +10,7 @@
 		4D5EFEBF068BD1D37B2366DC /* Pods_SOLUM_WalmartTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B60F6FA098356A93328CE9 /* Pods_SOLUM_WalmartTests.framework */; };
 		726CEADAEA14A0235A2FA142 /* Pods_SOLUM_Walmart_SOLUM_WalmartUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C253801A967A6AE82DC8BFAD /* Pods_SOLUM_Walmart_SOLUM_WalmartUITests.framework */; };
 		A3F5181D831BFAFB5E247055 /* Pods_SOLUM_Walmart.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0846675972CFBF84C7D8C1A1 /* Pods_SOLUM_Walmart.framework */; };
+		B37D3DC62CF9C7EA0079E010 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = B37D3DC52CF9C7EA0079E010 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B37D3DC62CF9C7EA0079E010 /* Kingfisher in Frameworks */,
 				A3F5181D831BFAFB5E247055 /* Pods_SOLUM_Walmart.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -250,6 +252,9 @@
 			);
 			mainGroup = B37D3C6D2CF94C600079E010;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B37D3DC42CF9C7C80079E010 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B37D3C772CF94C600079E010 /* Products */;
 			projectDirPath = "";
@@ -740,6 +745,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B37D3DC42CF9C7C80079E010 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B37D3DC52CF9C7EA0079E010 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B37D3DC42CF9C7C80079E010 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B37D3C6E2CF94C600079E010 /* Project object */;
 }

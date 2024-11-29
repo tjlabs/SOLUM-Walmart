@@ -39,14 +39,14 @@ class HeaderView: UIView {
     
     private let cartCountView: UIView = {
         let view = UIView()
-        view.backgroundColor = SOLUM_COLOR
-        view.layer.cornerRadius = 12.5
-        view.isHidden = true
+        view.backgroundColor = UIColor(hex: "#5A92E0")
+        view.layer.cornerRadius = 8
         return view
     }()
     
     private let cartCountLabel: UILabel = {
         let label = UILabel()
+        label.text = "4"
         label.textColor = .white
         label.font = UIFont.pretendardBold(size: 12)
         label.textAlignment = .center
@@ -131,6 +131,18 @@ class HeaderView: UIView {
             make.trailing.equalTo(personImageView.snp.leading).offset(-12)
             make.height.width.equalTo(24)
             make.centerY.equalToSuperview()
+        }
+        
+        addSubview(cartCountView)
+        cartCountView.snp.makeConstraints { make in
+            make.width.height.equalTo(16)
+            make.top.equalTo(cartImageView.snp.top).offset(-7)
+            make.trailing.equalTo(cartImageView.snp.trailing).offset(7)
+        }
+                
+        cartCountView.addSubview(cartCountLabel)
+        cartCountLabel.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
         
         searchImageView.snp.makeConstraints { make in

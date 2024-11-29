@@ -60,15 +60,28 @@ class MainViewController: UIViewController {
             personalOptionView.isHidden = false
         }
         
+        cartView.onFindProductImageViewTapped = { [self] in
+            self.removeCurrentSubview(cartView)
+            showFindProductView()
+        }
+        
         viewModel.eslData
             .subscribe(onNext: { [weak cartView] eslData in
                 guard let eslData = eslData else { return }
                 cartView?.updateProducts(eslData)
             })
             .disposed(by: disposeBag)
-
-        
         moveToSubview(cartView)
+    }
+    
+    private func showFindProductView() {
+        let findProductView = FindProductView()
+        findProductView.onBackTappedInFindProductView = { [self] in
+            self.removeCurrentSubview(findProductView)
+            personalOptionView.isHidden = false
+        }
+        
+        moveToSubview(findProductView)
     }
     
     private func removeCurrentSubview(_ subview: UIView) {

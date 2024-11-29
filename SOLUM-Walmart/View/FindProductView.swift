@@ -5,6 +5,7 @@ class FindProductView: UIView {
     private let backgroundView = BackgroundView()
     private let headerView = HeaderView(title: "Find Product")
     
+    var onBackTappedInFindProductView: (() -> Void)?
     var onAisleGuideImageViewTapped: (() -> Void)?
     private let aisleGuideImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
@@ -39,8 +40,7 @@ class FindProductView: UIView {
     
     private func bindActions() {
         headerView.onBackImageViewTapped = { [weak self] in
-            print("Back button tapped in FindProductView")
-            // Add more behavior as needed, e.g., callback to a parent view or controller
+            self?.onBackTappedInFindProductView?()
         }
     }
     

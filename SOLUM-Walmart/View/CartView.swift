@@ -4,8 +4,9 @@ import RxCocoa
 import SnapKit
 
 class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    private var sortedCartProducts: [Esl] = []
+    
     var onBackTappedInCartView: (() -> Void)?
-//    var onSearchTapped: (() -> Void)?
     var onPersonTappedInCartView: (() -> Void)?
 //    var onMenuTapped: (() -> Void)?
     
@@ -49,10 +50,10 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         $0.textColor = .white
     }
     
-    private let priceLabel = UILabel().then {
+    private var priceLabel = UILabel().then {
         $0.font = UIFont.pretendardSemiBold(size: 20)
         $0.textAlignment = .right
-        $0.text = "$ 100.11"
+        $0.text = "$ 0.0"
         $0.textColor = .white
     }
     
@@ -152,6 +153,13 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
         }
+        
+        addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            make.top.equalTo(deleteLabel.snp.bottom).offset(0)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(separatorView.snp.top).offset(-50)
+        }
     }
     
     private func bindActions() {
@@ -162,6 +170,11 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         headerView.onPersonImageViewTapped = {[weak self] in
             print("person button tapped in CartView")
             self?.onPersonTappedInCartView?()
+        }
+        
+        headerView.onSearchImageViewTapped = {[weak self] in
+            print("search button tapped in CartView")
+            self?.onFindProductImageViewTapped?()
         }
     }
     
@@ -178,7 +191,6 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
                 self.findProductImageView.transform = .identity // Reset to original scale
             }
         })
-        
         onFindProductImageViewTapped?()
     }
     
@@ -186,24 +198,34 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         let esl_list = outputESL.esl_list
         for item in esl_list {
             for esl in item.esls {
-                if cartItems.count < 5 {
+                if cartItems.count < 4 {
                     cartItems.append(esl)
                 }
             }
         }
+        configureCartView()
+    }
+    
+    private func configureCartView() {
+        sortedCartProducts = self.cartItems.sorted(by: { $0.product_price < $1.product_price })
+        var priceSum: Double = 0
+        for item in sortedCartProducts {
+            priceSum += item.product_price
+        }
+        
+        priceLabel.text = String(format: "$ %.2f", priceSum)
     }
 }
 
 extension CartView {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return sortedCartProducts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CartItemCell", for: indexPath) as! CartItemCell
-        let index = indexPath.item
-
-        cell.configure(data: cartItems[index])
+        let product = sortedCartProducts[indexPath.row]
+        cell.configure(data: product)
         return cell
     }
     
