@@ -4,8 +4,7 @@ import SnapKit
 class OptionCell: UICollectionViewCell {
     private let cellView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(hex: "#FFFFFF")
-        view.alpha = 0.3
+        view.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.3)
         
         view.borderColor = .systemGray5
         view.borderWidth = 1.2

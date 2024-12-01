@@ -29,9 +29,8 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
     
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(hex: "#D9D9D9")
-        view.alpha = 0.5
-        
+        view.backgroundColor = UIColor(hex: "#D9D9D9").withAlphaComponent(0.5)
+
         view.borderColor = UIColor(hex: "#FFFFFF")
         view.borderWidth = 1.0
         
