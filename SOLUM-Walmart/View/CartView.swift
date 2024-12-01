@@ -15,7 +15,7 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
     var cartItems = [Esl]()
     
     // Done Button
-    var onFindProductImageViewTapped: (() -> Void)?
+    var onFindProductImageViewTapped: (([Esl]) -> Void)?
     private let findProductImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "ic_findProduct")
@@ -168,13 +168,15 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         }
         
         headerView.onPersonImageViewTapped = {[weak self] in
-            print("person button tapped in CartView")
             self?.onPersonTappedInCartView?()
         }
         
-        headerView.onSearchImageViewTapped = {[weak self] in
-            print("search button tapped in CartView")
-            self?.onFindProductImageViewTapped?()
+//        headerView.onSearchImageViewTapped = {[weak self] in
+//            self?.onFindProductImageViewTapped?()
+//        }
+        headerView.onSearchImageViewTapped = { [weak self] in
+            guard let self = self else { return }
+            self.onFindProductImageViewTapped?(self.sortedCartProducts)
         }
     }
     
@@ -185,13 +187,13 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         
     @objc private func findProductImageViewTapped() {
         UIView.animate(withDuration: 0.1, animations: {
-            self.findProductImageView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96) // Shrink to 90%
+            self.findProductImageView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
         }, completion: { _ in
             UIView.animate(withDuration: 0.1) {
-                self.findProductImageView.transform = .identity // Reset to original scale
+                self.findProductImageView.transform = .identity
             }
         })
-        onFindProductImageViewTapped?()
+        onFindProductImageViewTapped?(sortedCartProducts)
     }
     
     func updateProducts(_ outputESL: OutputEsl) {

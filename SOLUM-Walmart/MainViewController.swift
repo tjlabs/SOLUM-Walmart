@@ -60,9 +60,14 @@ class MainViewController: UIViewController {
             personalOptionView.isHidden = false
         }
         
-        cartView.onFindProductImageViewTapped = { [self] in
+//        cartView.onFindProductImageViewTapped = { [self] in
+//            self.removeCurrentSubview(cartView)
+//            showFindProductView()
+//        }
+        cartView.onFindProductImageViewTapped = { [weak self] sortedCartProducts in
+            guard let self = self else { return }
             self.removeCurrentSubview(cartView)
-            showFindProductView()
+            self.showFindProductView(with: sortedCartProducts)
         }
         
         viewModel.eslData
@@ -74,15 +79,31 @@ class MainViewController: UIViewController {
         moveToSubview(cartView)
     }
     
-    private func showFindProductView() {
+//    private func showFindProductView() {
+//        let findProductView = FindProductView()
+//        findProductView.onBackTappedInFindProductView = { [self] in
+//            self.removeCurrentSubview(findProductView)
+//            personalOptionView.isHidden = false
+//        }
+//        
+//        moveToSubview(findProductView)
+//    }
+    
+    private func showFindProductView(with sortedCartProducts: [Esl]) {
         let findProductView = FindProductView()
-        findProductView.onBackTappedInFindProductView = { [self] in
+
+        // Pass the sortedCartProducts to FindProductView if needed
+        findProductView.configure(with: sortedCartProducts)
+        
+        findProductView.onBackTappedInFindProductView = { [weak self] in
+            guard let self = self else { return }
             self.removeCurrentSubview(findProductView)
-            personalOptionView.isHidden = false
+            self.personalOptionView.isHidden = false
         }
         
         moveToSubview(findProductView)
     }
+
     
     private func removeCurrentSubview(_ subview: UIView) {
         UIView.animate(withDuration: 0.3, animations: {

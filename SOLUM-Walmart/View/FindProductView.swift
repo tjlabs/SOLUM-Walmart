@@ -2,6 +2,8 @@ import UIKit
 import SnapKit
 
 class FindProductView: UIView {
+    private var sortedCartProducts: [Esl] = []
+    
     private let backgroundView = BackgroundView()
     private let headerView = HeaderView(title: "Find Product")
     
@@ -10,6 +12,15 @@ class FindProductView: UIView {
     private let aisleGuideImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "ic_aisleGuide")
+        $0.isUserInteractionEnabled = true
+    }
+    
+    var onRefreshLabelTapped: (() -> Void)?
+    private let refreshLabel = UILabel().then {
+        $0.font = UIFont.pretendardRegular(size: 16)
+        $0.textAlignment = .right
+        $0.text = "Refresh"
+        $0.textColor = .white
         $0.isUserInteractionEnabled = true
     }
     
@@ -23,6 +34,11 @@ class FindProductView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func configure(with products: [Esl]) {
+        self.sortedCartProducts = products
+        print("Received products: \(products)")
+    }
 
     private func setupLayout() {
         addSubview(backgroundView)
@@ -35,6 +51,14 @@ class FindProductView: UIView {
             make.height.equalTo(64)
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(self.safeAreaLayoutGuide.snp.top)
+        }
+        
+        addSubview(refreshLabel)
+        refreshLabel.snp.makeConstraints { make in
+            make.height.equalTo(40)
+            make.width.equalTo(100)
+            make.trailing.equalToSuperview().inset(20)
+            make.top.equalTo(headerView.snp.bottom).offset(0)
         }
     }
     
