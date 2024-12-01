@@ -72,6 +72,13 @@ class FindProductView: UIView, Observer {
         self.notificationCenterAddObserver()
         
         // MapView
+        let loadScale = loadMapScaleFromCache(key: "S3_7F")
+        if loadScale.0 {
+            // cache에 정보가 있으면
+        } else {
+            // cache에 정보가 없으면
+        }
+        mapView.setIsPpHidden(flag: false)
         OlympusMapManager.shared.loadMapForScale(region: "Korea", sector_id: sector_id, mapView: mapView)
         setupMapView()
     }
@@ -136,6 +143,51 @@ class FindProductView: UIView, Observer {
     private func bindActions() {
         headerView.onBackImageViewTapped = { [weak self] in
             self?.onBackTappedInFindProductView?()
+        }
+        
+        headerView.onMenuImageViewTapped = {
+            // Menu 버튼 클릭
+//            let a = mapView.getMapAndPpScaleValues()
+            
+//            self.mapView.setIsPpHidden(flag: false)
+            self.showMapSettingView()
+        }
+    }
+    
+    private func showMapSettingView() {
+        let mapSettingView = MapSettingView()
+        mapSettingView.onConfirm = { [weak self] in
+            print("Confirmed checkout")
+//            self?.mapView.setIsPpHidden(flag: true)
+        }
+        mapSettingView.onCancel = { [weak self] in
+            print("Checkout canceled")
+//            self?.mapView.setIsPpHidden(flag: true)
+        }
+
+        if let parentView = self.superview {
+            parentView.addSubview(mapSettingView)
+            mapSettingView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        }
+    }
+    
+    private func saveMapScaleToCache(key: String, value: [Double]) {
+        print(getLocalTimeString() + " , (FindProductView) Save \(key) scale : \(value)")
+        do {
+            let key: String = "MapScale_\(key)"
+            UserDefaults.standard.set(value, forKey: key)
+        }
+    }
+    
+    private func loadMapScaleFromCache(key: String) -> (Bool, [Double]?) {
+        let keyMapScale: String = "MapScale_\(key)"
+        if let loadedMapScale: [Double] = UserDefaults.standard.object(forKey: keyMapScale) as? [Double] {
+            print(getLocalTimeString() + " , (FindProductView) Load \(key) scale : \(loadedMapScale)")
+            return (true, loadedMapScale)
+        } else {
+            return (false, nil)
         }
     }
     
