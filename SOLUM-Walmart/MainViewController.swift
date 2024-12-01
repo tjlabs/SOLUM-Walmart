@@ -92,7 +92,6 @@ class MainViewController: UIViewController {
     private func showFindProductView(with sortedCartProducts: [Esl]) {
         let findProductView = FindProductView()
 
-        // Pass the sortedCartProducts to FindProductView if needed
         findProductView.configure(with: sortedCartProducts)
         
         findProductView.onBackTappedInFindProductView = { [weak self] in

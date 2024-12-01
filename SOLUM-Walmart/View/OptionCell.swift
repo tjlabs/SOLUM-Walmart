@@ -6,7 +6,7 @@ class OptionCell: UICollectionViewCell {
         let view = UIView()
         view.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.3)
         
-        view.borderColor = .systemGray5
+        view.borderColor = .systemGray4
         view.borderWidth = 1.2
         
         return view
@@ -35,7 +35,7 @@ class OptionCell: UICollectionViewCell {
         uncheckedImageView.contentMode = .scaleAspectFit
         titleLabel.textAlignment = .center
         titleLabel.textColor = .white
-        titleLabel.font = UIFont.systemFont(ofSize: 8)
+        titleLabel.font = UIFont.pretendardMedium(size: 8)
         
         addSubview(mainImageView)
         addSubview(uncheckedImageView)

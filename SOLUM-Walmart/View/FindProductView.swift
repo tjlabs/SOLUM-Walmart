@@ -2,7 +2,11 @@ import UIKit
 import SnapKit
 import OlympusSDK
 
-class FindProductView: UIView, Observer {
+class FindProductView: UIView, Observer, MapSettingViewDelegate {
+    func sliderValueChanged(index: Int, value: Double) {
+        mapView.updateMapAndPpScaleValues(index: index, value: value)
+    }
+    
     func update(result: OlympusSDK.FineLocationTrackingResult) { }
     func report(flag: Int) { }
     
@@ -28,6 +32,7 @@ class FindProductView: UIView, Observer {
     let user_id: String = "SOLUM-Test"
     let region: String = "Korea"
     let mode: String = "pdr"
+    let key_header = "S3_7F"
     
     let serviceManager = OlympusServiceManager()
     let mapView = OlympusMapViewForScale()
@@ -72,13 +77,7 @@ class FindProductView: UIView, Observer {
         self.notificationCenterAddObserver()
         
         // MapView
-        let loadScale = loadMapScaleFromCache(key: "S3_7F")
-        if loadScale.0 {
-            // cache에 정보가 있으면
-        } else {
-            // cache에 정보가 없으면
-        }
-        mapView.setIsPpHidden(flag: false)
+        mapView.setIsPpHidden(flag: true)
         OlympusMapManager.shared.loadMapForScale(region: "Korea", sector_id: sector_id, mapView: mapView)
         setupMapView()
     }
@@ -149,29 +148,75 @@ class FindProductView: UIView, Observer {
             // Menu 버튼 클릭
 //            let a = mapView.getMapAndPpScaleValues()
             
-//            self.mapView.setIsPpHidden(flag: false)
+            self.mapView.setIsPpHidden(flag: false)
             self.showMapSettingView()
         }
     }
     
+//    private func showMapSettingView() {
+//        let mapSettingView = MapSettingView()
+//        mapSettingView.onConfirm = { [weak self] in
+//            print("Confirm tapped")
+////            self?.mapView.setIsPpHidden(flag: true)
+//        }
+//        mapSettingView.onCancel = { [weak self] in
+//            print("Cancel tapped")
+////            self?.mapView.setIsPpHidden(flag: true)
+//        }
+//        
+//        mapSettingView.onReset = { [weak self] in
+//            print("Reset tapped")
+////            self?.mapView.setIsPpHidden(flag: true)
+//        }
+//
+//        if let parentView = self.superview {
+//            parentView.addSubview(mapSettingView)
+//            mapSettingView.snp.makeConstraints { make in
+//                make.edges.equalToSuperview()
+//            }
+//        }
+//    }
+    
     private func showMapSettingView() {
         let mapSettingView = MapSettingView()
-        mapSettingView.onConfirm = { [weak self] in
-            print("Confirmed checkout")
-//            self?.mapView.setIsPpHidden(flag: true)
-        }
-        mapSettingView.onCancel = { [weak self] in
-            print("Checkout canceled")
-//            self?.mapView.setIsPpHidden(flag: true)
-        }
-
+        mapSettingView.alpha = 0.5
+        mapSettingView.delegate = self
+        
         if let parentView = self.superview {
             parentView.addSubview(mapSettingView)
             mapSettingView.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
             }
         }
+        
+        let loadScale = loadMapScaleFromCache(key: key_header)
+        if loadScale.0, let cachedValues = loadScale.1 {
+            mapView.setIsDefaultScale(flag: false)
+            print(getLocalTimeString() + " , (FindProductView) cachedValues = \(cachedValues)")
+            mapSettingView.configure(with: cachedValues)
+        } else {
+            let defaultScales = mapView.mapAndPpScaleValues
+            print(getLocalTimeString() + " , (FindProductView) defaultScales = \(defaultScales)")
+            mapSettingView.configure(with: defaultScales)
+        }
+        
+        mapSettingView.onSave = { [weak self] in
+            guard let self = self else { return }
+            self.mapView.setIsPpHidden(flag: true)
+            let currentScales = mapSettingView.scales
+            self.saveMapScaleToCache(key: key_header, value: currentScales)
+        }
+        mapSettingView.onCancel = {
+            self.mapView.setIsPpHidden(flag: true)
+        }
+        
+        mapSettingView.onReset = { [weak self] in
+            guard let self = self else { return }
+            self.mapView.setIsPpHidden(flag: true)
+            self.deleteMapScaleFromCache(key: key_header)
+        }
     }
+
     
     private func saveMapScaleToCache(key: String, value: [Double]) {
         print(getLocalTimeString() + " , (FindProductView) Save \(key) scale : \(value)")
@@ -189,6 +234,12 @@ class FindProductView: UIView, Observer {
         } else {
             return (false, nil)
         }
+    }
+    
+    private func deleteMapScaleFromCache(key: String) {
+        let cacheKey = "MapScale_\(key)"
+        UserDefaults.standard.removeObject(forKey: cacheKey)
+        print(getLocalTimeString() + " , (FindProductView) Deleted \(key) scale from cache")
     }
     
     private func setupActions() {

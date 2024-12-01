@@ -14,7 +14,7 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
     private let solumImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: "ic_solum_logo")
+        imageView.image = UIImage(named: "ic_solum_logo_opacity")
         return imageView
     }()
     

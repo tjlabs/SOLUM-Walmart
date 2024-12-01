@@ -7,13 +7,21 @@ import RxCocoa
 import SnapKit
 import Then
 
+protocol MapSettingViewDelegate: AnyObject {
+    func sliderValueChanged(index: Int, value: Double)
+}
+
 class MapSettingView: UIView {
-    var onConfirm: (() -> Void)?
+    weak var delegate: MapSettingViewDelegate?
+    private var sliderReferences: [Int: UISlider] = [:]
+    
+    var onSave: (() -> Void)?
     var onCancel: (() -> Void)?
+    var onReset: (() -> Void)?
     
     var scales: [Double] = [0, 0, 0, 0]
-    let SCALE_MIN_MAX: [Float] = [-25, 25]
-    let OFFSET_MIN_MAX: [Float] = [-25, 25]
+    var SCALE_MIN_MAX: [Float] = [-50, 50]
+    var OFFSET_MIN_MAX: [Float] = [-50, 50]
     
     private lazy var darkView: UIView = {
         let view = UIView()
@@ -26,21 +34,30 @@ class MapSettingView: UIView {
     
     private let contentView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemGray5
         view.alpha = 0.8
         view.layer.cornerRadius = 10
         view.layer.masksToBounds = true
         return view
     }()
     
-    private let confirmButton: UIButton = {
+    private lazy var buttonStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 10
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    private let saveButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Confirm", for: .normal)
+        button.setTitle("Save", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.pretendardBold(size: 16)
         button.backgroundColor = SOLUM_COLOR
         button.layer.cornerRadius = 8
-        button.addTarget(self, action: #selector(confirmTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
         return button
     }()
     
@@ -52,6 +69,17 @@ class MapSettingView: UIView {
         button.backgroundColor = .systemGray
         button.layer.cornerRadius = 8
         button.addTarget(self, action: #selector(dismissDialog), for: .touchUpInside)
+        return button
+    }()
+    
+    private let resetButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Reset", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.pretendardBold(size: 16)
+        button.backgroundColor = .systemGray
+        button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(resetTapped), for: .touchUpInside)
         return button
     }()
     
@@ -69,19 +97,29 @@ class MapSettingView: UIView {
         
     }
     
-//    private func setupLayout() {
-//        addSubview(darkView)
-//        darkView.snp.makeConstraints { make in
-//            make.edges.equalToSuperview()
-//        }
-//        
-//        addSubview(contentView)
-//        contentView.snp.makeConstraints { make in
-//            make.center.equalToSuperview()
-//            make.width.equalToSuperview().inset(30)
-//            make.height.equalTo(400)
-//        }
-//        
+    private func setupLayout() {
+        addSubview(darkView)
+        darkView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        addSubview(contentView)
+        contentView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.equalToSuperview().inset(30)
+            make.height.equalTo(400)
+        }
+        
+        contentView.addSubview(buttonStackView)
+        buttonStackView.snp.makeConstraints { make in
+            make.bottom.equalToSuperview().offset(-10)
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.height.equalTo(30)
+        }
+        buttonStackView.addArrangedSubview(saveButton)
+        buttonStackView.addArrangedSubview(resetButton)
+        buttonStackView.addArrangedSubview(cancelButton)
+        
 //        contentView.addSubview(confirmButton)
 //        confirmButton.snp.makeConstraints { make in
 //            make.bottom.equalToSuperview().offset(-10)
@@ -97,92 +135,6 @@ class MapSettingView: UIView {
 //            make.trailing.equalToSuperview().offset(-20)
 //            make.height.equalTo(30)
 //        }
-//        
-//        // Setting View
-//        let verticalStackView = UIStackView()
-//        verticalStackView.axis = .vertical
-//        verticalStackView.distribution = .fillEqually
-//        verticalStackView.spacing = 10
-//        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
-//        contentView.addSubview(verticalStackView)
-//
-//        NSLayoutConstraint.activate([
-//            verticalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-//            verticalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-//            verticalStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-//            verticalStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -50)
-//        ])
-//
-//        let labels = ["x scale: ", "y scale: ", "x offset: ", "y offset: "]
-//
-//        for (index, labelText) in labels.enumerated() {
-//            let horizontalStackView = UIStackView()
-//            horizontalStackView.axis = .horizontal
-//            horizontalStackView.distribution = .fill
-//            horizontalStackView.spacing = 10
-//            horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
-//            
-//            let label = UILabel()
-//            label.text = labelText
-//            label.textAlignment = .left
-//            label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-//            
-//            let slider = UISlider()
-//            if index < 2 {
-//                slider.minimumValue = SCALE_MIN_MAX[0]
-//                slider.maximumValue = SCALE_MIN_MAX[1]
-//            } else {
-//                slider.minimumValue = OFFSET_MIN_MAX[0]
-//                slider.maximumValue = OFFSET_MIN_MAX[1]
-//            }
-//            
-//            slider.value = Float(scales[index])
-//            slider.tag = index
-//            
-//            slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
-//            
-//            let valueLabel = UILabel()
-//            valueLabel.text = String(format: "%.2f", scales[index])
-//            valueLabel.textAlignment = .right
-//            valueLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-//            valueLabel.tag = 1000 + index
-//            
-//            horizontalStackView.addArrangedSubview(label)
-//            horizontalStackView.addArrangedSubview(slider)
-//            horizontalStackView.addArrangedSubview(valueLabel)
-//            
-//            verticalStackView.addArrangedSubview(horizontalStackView)
-//        }
-//    }
-    
-    private func setupLayout() {
-        addSubview(darkView)
-        darkView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        addSubview(contentView)
-        contentView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalToSuperview().inset(30)
-            make.height.equalTo(400)
-        }
-        
-        contentView.addSubview(confirmButton)
-        confirmButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().offset(-10)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalTo(contentView.snp.centerX).offset(-10)
-            make.height.equalTo(30)
-        }
-        
-        contentView.addSubview(cancelButton)
-        cancelButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().offset(-10)
-            make.leading.equalTo(contentView.snp.centerX).offset(10)
-            make.trailing.equalToSuperview().offset(-20)
-            make.height.equalTo(30)
-        }
         
         // Main Vertical Stack View
         let verticalStackView = UIStackView()
@@ -200,73 +152,73 @@ class MapSettingView: UIView {
         ])
         
         let labels = ["x scale: ", "y scale: ", "x offset: ", "y offset: "]
-        var valueStep: Float = 1.0 // Default step value
+        var valueStep: Float = 1.0
         
         for (index, labelText) in labels.enumerated() {
-            // Create a sub verticalStackView for this iteration
             let subVerticalStackView = UIStackView()
             subVerticalStackView.axis = .vertical
             subVerticalStackView.distribution = .fillEqually
             subVerticalStackView.spacing = 10
             subVerticalStackView.translatesAutoresizingMaskIntoConstraints = false
-            
-            // Horizontal Stack View A
+
             let horizontalStackViewA = UIStackView()
             horizontalStackViewA.axis = .horizontal
             horizontalStackViewA.distribution = .fill
             horizontalStackViewA.spacing = 10
             horizontalStackViewA.translatesAutoresizingMaskIntoConstraints = false
-            
+
             let label = UILabel()
             label.text = labelText
             label.textAlignment = .left
             label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-            
+
             let slider = UISlider()
-            if index < 2 {
-                slider.minimumValue = SCALE_MIN_MAX[0]
-                slider.maximumValue = SCALE_MIN_MAX[1]
-            } else {
-                slider.minimumValue = OFFSET_MIN_MAX[0]
-                slider.maximumValue = OFFSET_MIN_MAX[1]
-            }
+            slider.minimumValue = (index < 2) ? SCALE_MIN_MAX[0] : OFFSET_MIN_MAX[0]
+            slider.maximumValue = (index < 2) ? SCALE_MIN_MAX[1] : OFFSET_MIN_MAX[1]
             slider.value = Float(scales[index])
             slider.tag = index
             slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
+            
+            sliderReferences[index] = slider
             
             let valueLabel = UILabel()
             valueLabel.text = String(format: "%.2f", scales[index])
             valueLabel.textAlignment = .right
             valueLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
             valueLabel.tag = 1000 + index
-            
+
             horizontalStackViewA.addArrangedSubview(label)
             horizontalStackViewA.addArrangedSubview(slider)
             horizontalStackViewA.addArrangedSubview(valueLabel)
-            
-            // Horizontal Stack View B
+
             let horizontalStackViewB = UIStackView()
             horizontalStackViewB.axis = .horizontal
             horizontalStackViewB.distribution = .fillEqually
             horizontalStackViewB.spacing = 10
             horizontalStackViewB.translatesAutoresizingMaskIntoConstraints = false
-            
+
             let buttonValues = ["0.1", "1", "10", "+", "-"]
             var selectedValueStepButton: UIButton?
-            
+
             for buttonTitle in buttonValues {
                 let button = UIButton()
                 button.setTitle(buttonTitle, for: .normal)
                 button.setTitleColor(.black, for: .normal)
                 button.backgroundColor = .lightGray
                 button.layer.cornerRadius = 5
-                button.tag = index
 
                 if buttonTitle == "1" {
-                    button.backgroundColor = .blue
+                    button.backgroundColor = SOLUM_COLOR
                     button.setTitleColor(.white, for: .normal)
                     selectedValueStepButton = button
                     valueStep = 1.0
+                }
+
+                // Assign unique tags
+                if buttonTitle == "+" || buttonTitle == "-" {
+                    button.tag = index + 100 // Offset for "+"/"-" buttons
+                } else {
+                    button.tag = index + 200 // Offset for "0.1", "1", "10" buttons
                 }
 
                 button.addAction(UIAction { [weak self, weak button] _ in
@@ -282,20 +234,156 @@ class MapSettingView: UIView {
                         button.backgroundColor = SOLUM_COLOR
                         button.setTitleColor(.white, for: .normal)
                         selectedValueStepButton = button
+                    } else if buttonTitle == "+" || buttonTitle == "-" {
+                        // Adjust slider value for + or -
+                        if let slider = sliderReferences[index] {
+                            let adjustment = (buttonTitle == "+") ? valueStep : -valueStep
+                            let newValue = Float(slider.value) + adjustment
+
+                            // Clamp newValue within the slider's min/max range
+                            slider.value = max(slider.minimumValue, min(slider.maximumValue, newValue))
+
+                            print("Slider tag: \(slider.tag), Value before: \(slider.value - adjustment), Adjustment: \(adjustment), New value: \(slider.value)")
+
+                            // Update scales array and UI
+                            let sliderValue = Double(slider.value)
+                            self.scales[index] = sliderValue
+                            if let valueLabel = self.contentView.viewWithTag(1000 + index) as? UILabel {
+                                valueLabel.text = String(format: "%.2f", sliderValue)
+                            }
+
+                            // Notify delegate
+                            self.delegate?.sliderValueChanged(index: index, value: sliderValue)
+                        } else {
+                            print("No slider found with index: \(index)")
+                        }
                     }
                 }, for: .touchUpInside)
 
                 horizontalStackViewB.addArrangedSubview(button)
             }
 
-            
-            // Add A and B to the subVerticalStackView
             subVerticalStackView.addArrangedSubview(horizontalStackViewA)
             subVerticalStackView.addArrangedSubview(horizontalStackViewB)
-            
-            // Add the subVerticalStackView to the main verticalStackView
+
             verticalStackView.addArrangedSubview(subVerticalStackView)
         }
+
+
+        
+//        for (index, labelText) in labels.enumerated() {
+//            print("index = \(index) , labelText = \(labelText)")
+//            let subVerticalStackView = UIStackView()
+//            subVerticalStackView.axis = .vertical
+//            subVerticalStackView.distribution = .fillEqually
+//            subVerticalStackView.spacing = 10
+//            subVerticalStackView.translatesAutoresizingMaskIntoConstraints = false
+//            
+//            let horizontalStackViewA = UIStackView()
+//            horizontalStackViewA.axis = .horizontal
+//            horizontalStackViewA.distribution = .fill
+//            horizontalStackViewA.spacing = 10
+//            horizontalStackViewA.translatesAutoresizingMaskIntoConstraints = false
+//            
+//            let label = UILabel()
+//            label.text = labelText
+//            label.textAlignment = .left
+//            label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+//            
+//            let slider = UISlider()
+//            if index < 2 {
+//                slider.minimumValue = SCALE_MIN_MAX[0]
+//                slider.maximumValue = SCALE_MIN_MAX[1]
+//            } else {
+//                slider.minimumValue = OFFSET_MIN_MAX[0]
+//                slider.maximumValue = OFFSET_MIN_MAX[1]
+//            }
+//            slider.value = Float(scales[index])
+//            slider.tag = index
+//            print("index = \(index) , slider.tag = \(slider.tag)")
+//            slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
+//            
+//            let valueLabel = UILabel()
+//            valueLabel.text = String(format: "%.2f", scales[index])
+//            valueLabel.textAlignment = .right
+//            valueLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+//            valueLabel.tag = 1000 + index
+//            
+//            horizontalStackViewA.addArrangedSubview(label)
+//            horizontalStackViewA.addArrangedSubview(slider)
+//            horizontalStackViewA.addArrangedSubview(valueLabel)
+//            
+//            let horizontalStackViewB = UIStackView()
+//            horizontalStackViewB.axis = .horizontal
+//            horizontalStackViewB.distribution = .fillEqually
+//            horizontalStackViewB.spacing = 10
+//            horizontalStackViewB.translatesAutoresizingMaskIntoConstraints = false
+//            
+//            let buttonValues = ["0.1", "1", "10", "+", "-"]
+//            var selectedValueStepButton: UIButton?
+//            
+//            for buttonTitle in buttonValues {
+//                let button = UIButton()
+//                button.setTitle(buttonTitle, for: .normal)
+//                button.setTitleColor(.black, for: .normal)
+//                button.backgroundColor = .lightGray
+//                button.layer.cornerRadius = 5
+//                button.tag = index
+//                print("index = \(index) , button.tag = \(button.tag)")
+//                if buttonTitle == "1" {
+//                    button.backgroundColor = SOLUM_COLOR
+//                    button.setTitleColor(.white, for: .normal)
+//                    selectedValueStepButton = button
+//                    valueStep = 1.0
+//                }
+//
+//                button.addAction(UIAction { [weak self, weak button] _ in
+//                    guard let self = self, let button = button else { return }
+//                    if buttonTitle == "0.1" || buttonTitle == "1" || buttonTitle == "10" {
+//                        valueStep = Float(buttonTitle) ?? 1.0
+//
+//                        if let selectedButton = selectedValueStepButton {
+//                            selectedButton.backgroundColor = .lightGray
+//                            selectedButton.setTitleColor(.black, for: .normal)
+//                        }
+//
+//                        button.backgroundColor = SOLUM_COLOR
+//                        button.setTitleColor(.white, for: .normal)
+//                        selectedValueStepButton = button
+//                    } else if buttonTitle == "+" || buttonTitle == "-" {
+//                        // Adjust slider value for + or -
+//                        if let slider = self.contentView.viewWithTag(index) as? UISlider {
+//                            
+//                            let adjustment = (buttonTitle == "+") ? valueStep : -valueStep
+//                            let newValue = Float(slider.value) + adjustment
+//
+//                            // Clamp newValue within the slider's min/max range
+//                            slider.value = max(slider.minimumValue, min(slider.maximumValue, newValue))
+//                            
+//                            print("Slider current value: \(slider.value), adjustment: \(adjustment)")
+//                            // Update scales array and UI
+//                            let sliderValue = Double(slider.value)
+//                            self.scales[index] = sliderValue
+//                            if let valueLabel = self.contentView.viewWithTag(1000 + index) as? UILabel {
+//                                valueLabel.text = String(format: "%.2f", sliderValue)
+//                            }
+//
+//                            // Notify delegate
+//                            self.delegate?.sliderValueChanged(index: index, value: sliderValue)
+//                        } else {
+//                            print("No slider found with tag : buttonTag = \(button.tag)")
+//                        }
+//                    }
+//                }, for: .touchUpInside)
+//
+//                horizontalStackViewB.addArrangedSubview(button)
+//            }
+//
+//            subVerticalStackView.addArrangedSubview(horizontalStackViewA)
+//            subVerticalStackView.addArrangedSubview(horizontalStackViewB)
+//
+//            verticalStackView.addArrangedSubview(subVerticalStackView)
+//        }
     }
 
     @objc private func buttonTapped(_ sender: UIButton) {
@@ -303,10 +391,14 @@ class MapSettingView: UIView {
     }
 
     @objc private func sliderValueChanged(_ sender: UISlider) {
-        let valueLabelTag = 1000 + sender.tag
-        if let valueLabel = viewWithTag(valueLabelTag) as? UILabel {
-            valueLabel.text = String(format: "%.2f", sender.value)
+        let index = sender.tag
+        let sliderValue = Double(sender.value)
+        scales[index] = Double(sender.value)
+        if let valueLabel = contentView.viewWithTag(1000 + index) as? UILabel {
+            valueLabel.text = String(format: "%.2f", scales[index])
         }
+        delegate?.sliderValueChanged(index: index, value: sliderValue)
+//        mapView.updateMapAndPpScaleValues(index: index, value: sliderValue)
     }
     
     private func setupActions() {
@@ -318,8 +410,32 @@ class MapSettingView: UIView {
         removeFromSuperview()
     }
     
-    @objc private func confirmTapped() {
-        onConfirm?()
+    @objc private func saveTapped() {
+        onSave?()
+    }
+    
+    @objc private func resetTapped() {
+        onReset?()
         removeFromSuperview()
+    }
+    
+    func configure(with scales: [Double]) {
+        self.scales = scales
+        print(getLocalTimeString() + " , (FindProductView) configure = \(self.scales)")
+        for (index, value) in scales.enumerated() {
+            print(getLocalTimeString() + " , (FindProductView) : configure index = \(index)")
+            if let slider = sliderReferences[index] {
+                print(getLocalTimeString() + " , (FindProductView) : Updated slider \(index) to value \(slider.value)")
+                slider.value = Float(value)
+            } else {
+                print("No slider reference found for index \(index)")
+            }
+
+
+            let valueLabelTag = 1000 + index
+            if let valueLabel = contentView.viewWithTag(valueLabelTag) as? UILabel {
+                valueLabel.text = String(format: "%.2f", value)
+            }
+        }
     }
 }
