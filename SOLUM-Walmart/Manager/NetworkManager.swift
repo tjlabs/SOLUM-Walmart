@@ -109,12 +109,12 @@ public class NetworkManager {
         sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_POST
         let session = URLSession(configuration: sessionConfig)
         
-        print("")
-        print("====================================")
-        print("POST TOKEN URL :: ", url)
-        print("POST TOKEN 데이터 :: ", input)
-        print("====================================")
-        print("")
+//        print("")
+//        print("====================================")
+//        print("POST TOKEN URL :: ", url)
+//        print("POST TOKEN 데이터 :: ", input)
+//        print("====================================")
+//        print("")
         
         let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
             // [error가 존재하면 종료]
@@ -153,8 +153,6 @@ public class NetworkManager {
         if token == "" {
             completion(401, "Invalid Token")
             return
-        } else {
-            print("PUT ESL Token : \(token)")
         }
         // Configure the URL components and request
         guard let urlComponents = URLComponents(string: url), let url = urlComponents.url else {
@@ -184,12 +182,12 @@ public class NetworkManager {
         let session = URLSession(configuration: sessionConfig)
 
         // Debugging prints
-        print("")
-        print("====================================")
-        print("PUT ESL URL :: ", url)
-        print("PUT ESL 데이터 :: ", input)
-        print("====================================")
-        print("")
+//        print("")
+//        print("====================================")
+//        print("PUT ESL URL :: ", url)
+//        print("PUT ESL 데이터 :: ", input)
+//        print("====================================")
+//        print("")
 
         // Execute the network request
         let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in

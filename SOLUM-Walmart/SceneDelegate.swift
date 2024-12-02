@@ -7,12 +7,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        let storyboard = UIStoryboard(name: "SplashViewController", bundle: nil)
-        let initialViewController = storyboard.instantiateViewController(withIdentifier: "SplashViewController")
-        self.window?.rootViewController = initialViewController
-        self.window?.makeKeyAndVisible()
-        
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+
+        window = UIWindow(windowScene: windowScene)
+        let splashViewController = SplashViewController()
+        window?.rootViewController = splashViewController
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

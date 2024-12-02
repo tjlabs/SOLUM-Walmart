@@ -37,13 +37,14 @@ class SplashViewController: UIViewController {
     }
     
     private func moveToMain() {
-        sleep(3)
-        UIView.animate(withDuration: 1.0, delay: 1.5, options: .curveEaseOut, animations: {
-        }, completion: { finished in
-            let Storyboard = UIStoryboard.init(name: "Main", bundle: nil)
-            guard let VC = Storyboard.instantiateViewController(identifier: "MainViewController") as? MainViewController else { return }
-            VC.modalPresentationStyle = .fullScreen
-            self.present(VC, animated: false, completion: nil)
-        })
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
+            }, completion: { finished in
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                guard let vc = storyboard.instantiateViewController(withIdentifier: "MainViewController") as? MainViewController else { return }
+                vc.modalPresentationStyle = .fullScreen
+                self.present(vc, animated: false, completion: nil)
+            })
+        }
     }
 }

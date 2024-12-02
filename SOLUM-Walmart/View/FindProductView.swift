@@ -13,14 +13,18 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     }
     
     func update(result: OlympusSDK.FineLocationTrackingResult) {
-        mapView.updateResultInMap(result: result)
-        let userCoord = [result.x, result.y, result.absolute_heading]
-        let nearbyEslList = checkNearbyESL(user: userCoord)
-        for esl in nearbyEslList {
-            activateESL(esl: esl)
-            let contents = makeEslContents(user: userCoord, esl: esl)
-            showNearbyProduct(url: esl.product_url, title: esl.product_name, contents: contents)
+        let currentIndex = result.index
+        if currentIndex > preIndex {
+            mapView.updateResultInMap(result: result)
+            let userCoord = [result.x, result.y, result.absolute_heading]
+            let nearbyEslList = checkNearbyESL(user: userCoord)
+            for esl in nearbyEslList {
+                activateESL(esl: esl)
+                let contents = makeEslContents(user: userCoord, esl: esl)
+                showNearbyProduct(url: esl.product_url, title: esl.product_name, contents: contents)
+            }
         }
+        preIndex = currentIndex
     }
     
     func report(flag: Int) { }
@@ -44,6 +48,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     var onRefreshLabelTapped: (() -> Void)?
     
     private var isServiceStarted: Bool = false
+    var preIndex: Int = -1
     
     // Olympus Service
     let sector_id: Int = 2
