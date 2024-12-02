@@ -209,7 +209,8 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
     }
     
     private func configureCartView() {
-        sortedCartProducts = self.cartItems.sorted(by: { $0.product_price < $1.product_price })
+//        sortedCartProducts = self.cartItems.sorted(by: { $0.product_price < $1.product_price })
+        sortedCartProducts = cartItems
         var priceSum: Double = 0
         for item in sortedCartProducts {
             priceSum += item.product_price
