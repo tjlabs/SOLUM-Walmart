@@ -77,12 +77,38 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
         setupLayout()
         setupActions()
         bindActions()
+        verifyToken()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
+    private func verifyToken() {
+        let tokenInput = TOKEN_INPUT(username: TokenInfo.username, password: TokenInfo.password)
+        NetworkManager.shared.postToken(url: SOLUM_TOKEN_URL, input: tokenInput, completion: { [self] statusCode, returnedString in
+            if statusCode == 200 {
+                parseAndSetToken(from: returnedString)
+            }
+        })
+    }
+    
+    func parseAndSetToken(from jsonString: String) {
+        guard let jsonData = jsonString.data(using: .utf8) else {
+            print("Failed to convert JSON string to Data.")
+            return
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            let apiResponse = try decoder.decode(ApiResponse.self, from: jsonData)
+            let accessToken = apiResponse.responseMessage.access_token
+            TokenInfo.setToken(token: accessToken)
+        } catch {
+            print("Error decoding JSON: \(error)")
+        }
+    }
+    
     private func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in

@@ -2,7 +2,13 @@ import UIKit
 import SnapKit
 import OlympusSDK
 
-class FindProductView: UIView, Observer, MapSettingViewDelegate {
+class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScaleDelegate {
+    func plotPathPixelsActivated(isActivated: Bool) {
+        if isActivated {
+            plotProducts(products: self.sortedCartProducts)
+        }
+    }
+    
     func sliderValueChanged(index: Int, value: Double) {
         mapView.updateMapAndPpScaleValues(index: index, value: value)
     }
@@ -77,9 +83,10 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate {
         self.notificationCenterAddObserver()
         
         // MapView
-        mapView.setIsPpHidden(flag: true)
+        mapView.setIsPpHidden(flag: false)
         OlympusMapManager.shared.loadMapForScale(region: "Korea", sector_id: sector_id, mapView: mapView)
         setupMapView()
+        mapView.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -92,9 +99,56 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate {
     
     func configure(with products: [Esl]) {
         self.sortedCartProducts = products
-        print("Received products: \(products)")
+        print("(FindProductView) : Received products: \(products)")
     }
-
+    
+    private func plotProducts(products: [Esl]) {
+        let mapAndPpScaleValues = mapView.mapAndPpScaleValues
+        print("(FindProductView) : plotProduct // mapAndPpScaleValues = \(mapAndPpScaleValues)")
+        print("(FindProductView) : plotProduct // products = \(products)")
+        for item in products {
+            let productView = makeProductUIView(product: item, scales: mapAndPpScaleValues)
+            mapView.plotUnitUsingCoord(unitView: productView)
+        }
+    }
+    
+    private func makeProductUIView(product: Esl, scales: [Double]) -> UIView {
+        let productColor = product.color
+        var productViewColor = UIColor.white
+        switch(productColor) {
+        case "RED":
+            productViewColor = RED_COLOR
+        case "GREEN":
+            productViewColor = GREEN_COLOR
+        case "YELLOW":
+            productViewColor = YELLOW_COLOR
+        case "BLUE":
+            productViewColor = BLUE_COLOR
+        case "MAGENTA":
+            productViewColor = MAGENTA_COLOR
+        case "WHITE":
+            productViewColor = WHITE_COLOR
+        default:
+            productViewColor = WHITE_COLOR
+        }
+        
+        let x = product.x
+        let y = -product.y
+        
+        let transformedX = (x - scales[2])*scales[0]
+        let transformedY = (y - scales[3])*scales[1]
+        
+        let rotatedX = transformedX
+        let rotatedY = transformedY
+        
+        let markerSize: Double = 20
+        let productView = UIView(frame: CGRect(x: rotatedX - markerSize/2, y: rotatedY - markerSize/2, width: markerSize, height: markerSize))
+        productView.backgroundColor = productViewColor
+        productView.layer.cornerRadius = markerSize/4
+        
+        return productView
+    }
+    
     private func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
@@ -187,13 +241,6 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate {
             make.edges.equalToSuperview()
         }
         
-//        if let parentView = self.superview {
-//            parentView.addSubview(mapSettingView)
-//            mapSettingView.snp.makeConstraints { make in
-//                make.edges.equalToSuperview()
-//            }
-//        }
-        
         let loadScale = loadMapScaleFromCache(key: key_header)
         if loadScale.0, let cachedValues = loadScale.1 {
             print(getLocalTimeString() + " , (FindProductView) cachedValues = \(cachedValues)")
@@ -222,7 +269,6 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate {
             self.deleteMapScaleFromCache(key: self.key_header)
         }
     }
-
     
     private func saveMapScaleToCache(key: String, value: [Double]) {
         print(getLocalTimeString() + " , (FindProductView) Save \(key) scale : \(value)")
@@ -340,5 +386,18 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate {
         let unique_id: String = "\(uuid)_\(currentTime)"
         
         return unique_id
+    }
+    
+    // ESL Activation //
+    private func activateESL(esl: Esl) {
+        let esl_id = esl.id
+        let esl_color = esl.color
+        let esl_duration = esl.duration
+        let ledBlink = ledBlink(labelCode: esl_id, color: esl_color, duration: esl_duration, patternId: 0, multiLed: false)
+        let eslInput = ESL_RUN_INPUT(ledBlinkList: [ledBlink])
+        NetworkManager.shared.putESL(url: SOLUM_ESL_URL, input: eslInput, completion: { [self] statusCode, returnedString in
+//            print("(FindProductView) ESL : code = \(statusCode)")
+//            print("(FindProductView) ESL : returnedString = \(returnedString)")
+        })
     }
 }
