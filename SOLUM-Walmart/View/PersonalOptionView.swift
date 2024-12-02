@@ -200,9 +200,11 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
         
         if isDoneTapped {
             isDoneTapped = false
+            collectionView.isUserInteractionEnabled = true
             doneImageView.image = UIImage(named: "ic_done")
         } else {
             isDoneTapped = true
+            collectionView.isUserInteractionEnabled = false
             doneImageView.image = UIImage(named: "ic_done_disable")
         }
         
@@ -210,7 +212,10 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
     }
     
     @objc private func refreshLabelTapped() {
-        print("Refresh Tapped")
+        guard let visibleCells = collectionView.visibleCells as? [OptionCell] else { return }
+        for cell in visibleCells {
+            cell.deselect()
+        }
     }
 }
 

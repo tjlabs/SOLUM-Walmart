@@ -1,5 +1,5 @@
 PODS:
-  - OlympusSDK (0.2.9)
+  - OlympusSDK (0.2.10)
   - RxCocoa (6.5.0):
     - RxRelay (= 6.5.0)
     - RxSwift (= 6.5.0)
@@ -10,7 +10,7 @@ PODS:
   - Then (3.0.0)
 
 DEPENDENCIES:
-  - OlympusSDK (= 0.2.9)
+  - OlympusSDK (= 0.2.10)
   - RxCocoa (~> 6.5.0)
   - RxSwift (~> 6.5.0)
   - SnapKit
@@ -26,13 +26,13 @@ SPEC REPOS:
     - Then
 
 SPEC CHECKSUMS:
-  OlympusSDK: de0608a084b6335a798129bb0a49b2174dc53567
+  OlympusSDK: 4115e2fafeb8a844f40f69cde8731f308af7e0e1
   RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
   RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
   RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
   SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: 390e37ae4e1da293d7059e1b6de50c4aa2431599
+PODFILE CHECKSUM: 69a2846b768e35c1951d14a0720a69ce9773c50c
 
 COCOAPODS: 1.16.2

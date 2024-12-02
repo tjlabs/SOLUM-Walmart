@@ -5,20 +5,25 @@ class OptionCell: UICollectionViewCell {
     private let cellView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.3)
-        
         view.borderColor = .systemGray4
         view.borderWidth = 1.2
-        
         return view
     }()
         
     private let mainImageView = UIImageView()
     private let uncheckedImageView = UIImageView()
     private let titleLabel = UILabel()
-
+    
+    private var isSelectedState = false
+    private let randomImages = [
+        "ic_checkbox_RED", "ic_checkbox_GREEN", "ic_checkbox_YELLOW",
+        "ic_checkbox_BLUE", "ic_checkbox_MAGENTA", "ic_checkbox_CYAN", "ic_checkbox_WHITE"
+    ]
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(cellTapped)))
     }
 
     required init?(coder: NSCoder) {
@@ -68,6 +73,34 @@ class OptionCell: UICollectionViewCell {
                 uncheckedImageView.image = UIImage(named: "ic_uncheckedBox")
                 titleLabel.text = label
             }
+        }
+    }
+    
+    @objc private func cellTapped() {
+        guard let title = titleLabel.text, !title.isEmpty else {
+            return
+        }
+        
+        UIView.animate(withDuration: 0.1, animations: {
+            self.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.transform = .identity
+            }
+        })
+        isSelectedState.toggle()
+        if isSelectedState {
+            let randomImage = randomImages.randomElement() ?? "ic_checkbox_RED"
+            uncheckedImageView.image = UIImage(named: randomImage)
+        } else {
+            uncheckedImageView.image = UIImage(named: "ic_uncheckedBox")
+        }
+    }
+
+    func deselect() {
+        if let title = titleLabel.text, !title.isEmpty {
+            isSelectedState = false
+            uncheckedImageView.image = UIImage(named: "ic_uncheckedBox")
         }
     }
 }

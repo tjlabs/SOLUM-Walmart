@@ -1,22 +1,34 @@
 import UIKit
 import SnapKit
+import Kingfisher
 import OlympusSDK
 
 class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScaleDelegate {
-    func plotPathPixelsActivated(isActivated: Bool) {
-        if isActivated {
-            plotProducts(products: self.sortedCartProducts)
-        }
+    func mapScaleUpdated() {
+        plotProducts(products: self.sortedCartProducts)
     }
     
     func sliderValueChanged(index: Int, value: Double) {
         mapView.updateMapAndPpScaleValues(index: index, value: value)
     }
     
-    func update(result: OlympusSDK.FineLocationTrackingResult) { }
+    func update(result: OlympusSDK.FineLocationTrackingResult) {
+        mapView.updateResultInMap(result: result)
+        let userCoord = [result.x, result.y, result.absolute_heading]
+        let nearbyEslList = checkNearbyESL(user: userCoord)
+        for esl in nearbyEslList {
+            activateESL(esl: esl)
+            let contents = makeEslContents(user: userCoord, esl: esl)
+            showNearbyProduct(url: esl.product_url, title: esl.product_name, contents: contents)
+        }
+    }
+    
     func report(flag: Int) { }
     
     private var sortedCartProducts: [Esl] = []
+    var eslDict = [String: Double]()
+    let REQ_DISTANCE: Double = 2.0
+    let REQ_LED_TIME: Double = 10*1000
     
     private let backgroundView = BackgroundView()
     private let headerView = HeaderView(title: "Find Product")
@@ -73,6 +85,38 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         return view
     }()
     
+    private let nearbyView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGray4
+        view.alpha = 0.5
+        view.cornerRadius = 10
+        return view
+    }()
+    
+    private let productImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private let productNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.pretendardMedium(size: 8)
+        label.textColor = .black
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private let productContentsLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.pretendardBold(size: 12)
+        label.textColor = .black
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
@@ -83,7 +127,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         self.notificationCenterAddObserver()
         
         // MapView
-        mapView.setIsPpHidden(flag: false)
+        mapView.setIsPpHidden(flag: true)
         OlympusMapManager.shared.loadMapForScale(region: "Korea", sector_id: sector_id, mapView: mapView)
         setupMapView()
         mapView.delegate = self
@@ -94,6 +138,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     }
     
     deinit {
+        stopService()
         self.notificationCenterRemoveObserver()
     }
     
@@ -191,6 +236,36 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(aisleGuideImageView.snp.top).offset(-10)
         }
+        
+        nearbyView.isHidden = true
+        addSubview(nearbyView)
+        nearbyView.snp.makeConstraints { make in
+            make.top.equalTo(refreshLabel.snp.bottom).offset(5)
+            make.leading.equalTo(containerView.snp.leading).inset(20)
+            make.trailing.equalTo(containerView.snp.trailing).inset(20)
+            make.height.equalTo(100)
+        }
+        
+        nearbyView.addSubview(productImageView)
+        productImageView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(10)
+            make.leading.equalToSuperview().inset(10)
+            make.width.equalTo(120)
+        }
+        
+        nearbyView.addSubview(productNameLabel)
+        productNameLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(15)
+            make.leading.equalTo(productImageView.snp.trailing).offset(20)
+            make.trailing.equalToSuperview().inset(20)
+        }
+        
+        nearbyView.addSubview(productContentsLabel)
+        productContentsLabel.snp.makeConstraints { make in
+            make.top.equalTo(productNameLabel.snp.bottom).offset(5)
+            make.leading.equalTo(productNameLabel.snp.leading)
+            make.trailing.equalToSuperview().inset(20)
+        }
     }
     
     private func bindActions() {
@@ -206,6 +281,40 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             self.showMapSettingView()
         }
     }
+    
+//    private func showNearbyProduct(url: String, title: String, contents: String) {
+//        nearbyView.isHidden = false
+//        if let url = URL(string: url) {
+//            productImageView.kf.setImage(with: url, placeholder: UIImage(named: "placeholder"))
+//        }
+//        productNameLabel.text = title
+//        productContentsLabel.text = contents
+//    }
+    
+    private func showNearbyProduct(url: String, title: String, contents: String) {
+        DispatchQueue.main.async { [self] in
+            nearbyView.isHidden = false
+            nearbyView.alpha = 0.0
+            UIView.animate(withDuration: 0.3) {
+                self.nearbyView.alpha = 1.0
+            }
+
+            if let url = URL(string: url) {
+                productImageView.kf.setImage(with: url, placeholder: UIImage(named: "placeholder"))
+            }
+            productNameLabel.text = title
+            productContentsLabel.text = contents
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.nearbyView.alpha = 0.0
+                }) { _ in
+                    self.nearbyView.isHidden = true
+                }
+            }
+        }
+    }
+
     
 //    private func showMapSettingView() {
 //        let mapSettingView = MapSettingView()
@@ -319,10 +428,10 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             self.aisleGuideImageView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96) // Shrink to 90%
         }, completion: { _ in
             UIView.animate(withDuration: 0.1) {
-                self.aisleGuideImageView.transform = .identity // Reset to original scale
+                self.aisleGuideImageView.transform = .identity
             }
         })
-        
+        startService()
         onAisleGuideImageViewTapped?()
     }
     
@@ -365,8 +474,9 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     }
     
     private func startService() {
-        let uniqueId = makeUniqueId(uuid: self.user_id)
+        serviceManager.setDeadReckoningMode(flag: true, buildingName: "S3", levelName: "7F", x: 16, y: 13, heading: 180)
         
+        let uniqueId = makeUniqueId(uuid: self.user_id)
         serviceManager.addObserver(self)
         serviceManager.startService(user_id: uniqueId, region: region, sector_id: sector_id, service: "FLT", mode: mode, completion: { [self] isStart, returnedString in
             if (isStart) {
@@ -399,5 +509,42 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
 //            print("(FindProductView) ESL : code = \(statusCode)")
 //            print("(FindProductView) ESL : returnedString = \(returnedString)")
         })
+    }
+    
+    private func makeEslContents(user: [Double], esl: Esl) -> String {
+        return "This product is on left"
+    }
+    
+    private func checkNearbyESL(user: [Double]) -> [Esl] {
+        var nearByEsl = [Esl]()
+        
+        let products = self.sortedCartProducts
+        for product in products {
+            let productX = product.x
+            let productY = product.y
+            
+            let diffX = user[0] - productX
+            let diffY = user[1] - productY
+            let distance = sqrt(diffX*diffX + diffY*diffY)
+//            print(getLocalTimeString() + " , (FindProductView) product = \(product.product_name) // distance = \(distance)")
+            let currentTime = getCurrentTimeInMillisecondsDouble()
+            if distance < REQ_DISTANCE {
+                let eslId = product.id
+                if let preTagTime = eslDict[eslId] {
+                    // 태깅한적 있음
+                    if currentTime - preTagTime > REQ_LED_TIME {
+                        // Taging한지 10초 지남
+                        nearByEsl.append(product)
+                    }
+                } else {
+                    // 최초
+                    nearByEsl.append(product)
+                }
+                eslDict[eslId] = currentTime
+            }
+        }
+//        print(getLocalTimeString() + " , (FindProductView) nearByEsl = \(nearByEsl)")
+        
+        return nearByEsl
     }
 }
