@@ -11,15 +11,16 @@ class OptionCell: UICollectionViewCell {
     }()
         
     private let mainImageView = UIImageView()
-    private let uncheckedImageView = UIImageView()
+    public let uncheckedImageView = UIImageView()
     private let titleLabel = UILabel()
     var labelText: String = ""
     
     public var isSelectedState = false
-    private let randomImages = [
-        "ic_checkbox_RED", "ic_checkbox_GREEN", "ic_checkbox_YELLOW",
-        "ic_checkbox_BLUE", "ic_checkbox_MAGENTA", "ic_checkbox_CYAN", "ic_checkbox_WHITE"
-    ]
+//    private let randomImages = [
+//        "ic_checkbox_RED", "ic_checkbox_GREEN", "ic_checkbox_YELLOW",
+//        "ic_checkbox_BLUE", "ic_checkbox_MAGENTA", "ic_checkbox_CYAN", "ic_checkbox_WHITE"
+//    ]
+    private let randomImages = ["ic_checkbox_GREEN"]
     
     override init(frame: CGRect) {
         super.init(frame: frame)

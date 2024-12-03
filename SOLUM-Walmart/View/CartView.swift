@@ -4,18 +4,19 @@ import RxCocoa
 import SnapKit
 
 class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    private var sortedCartProducts: [Esl] = []
-    
     var onBackTappedInCartView: (() -> Void)?
     var onPersonTappedInCartView: (() -> Void)?
 //    var onMenuTapped: (() -> Void)?
     
     private let backgroundView = BackgroundView()
     private let headerView = HeaderView(title: "Cart")
-    var cartItems = [Esl]()
+    
+    var onCartProducts = [ProductInfo]()
+    var offCartProducts = [ProductInfo]()
     
     // Done Button
-    var onFindProductImageViewTapped: (([Esl]) -> Void)?
+//    var onFindProductImageViewTapped: (([Esl]) -> Void)?
+    var onFindProductImageViewTapped: (([ProductInfo], [ProductInfo]) -> Void)?
     private let findProductImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "ic_findProduct")
@@ -176,7 +177,8 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
 //        }
         headerView.onSearchImageViewTapped = { [weak self] in
             guard let self = self else { return }
-            self.onFindProductImageViewTapped?(self.sortedCartProducts)
+//            self.onFindProductImageViewTapped?(self.cartProducts)
+            self.onFindProductImageViewTapped?(self.onCartProducts, self.offCartProducts)
         }
     }
     
@@ -193,45 +195,69 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
                 self.findProductImageView.transform = .identity
             }
         })
-        onFindProductImageViewTapped?(sortedCartProducts)
+        onFindProductImageViewTapped?(onCartProducts, offCartProducts)
     }
     
-    func updateProducts(_ outputESL: OutputEsl) {
-        let esl_list = outputESL.esl_list
-        for item in esl_list {
-            for esl in item.esls {
-                if cartItems.count < 4 {
-                    cartItems.append(esl)
+    func updateAllProducts(outputProducts: ShopOutput) {
+        for category_list in outputProducts.category_list {
+            let building_name = category_list.building_name
+            let level_name = category_list.level_name
+            let categories = category_list.categories
+            for category in categories {
+                let categoryName = category.name
+                let categoryNumber = category.number
+                let categoryColor = category.color
+                let categoryX = category.x
+                let categoryY = category.y
+                let categoryRange = category.range
+                
+                let product_list = category.products
+                for product in product_list {
+                    let productEslId = product.esl_id
+                    let productEslDuration = product.esl_duration
+                    
+                    let productName = product.name
+                    let productPrice = product.price
+                    let productURL = product.image_url
+                    let productProfile = product.profile
+                    let onCart = product.on_cart
+                    
+                    let productInfo = ProductInfo(id: productEslId, led_duration: productEslDuration,
+                                                  category_name: categoryName, category_number: categoryNumber, category_color: categoryColor, category_x: categoryX, category_y: categoryY, category_range: categoryRange,
+                                                  product_name: productName, product_price: productPrice, product_url: productURL, product_profile: productProfile)
+                    if onCart {
+                        // 카트에 담긴 제품
+                        self.onCartProducts.append(productInfo)
+                    } else {
+                        // 카트에 안담긴 제품
+                        self.offCartProducts.append(productInfo)
+                    }
                 }
             }
         }
         configureCartView()
     }
     
-    func updateAllProducts() {
-        
-    }
-    
     private func configureCartView() {
-//        sortedCartProducts = self.cartItems.sorted(by: { $0.product_price < $1.product_price })
-        sortedCartProducts = cartItems
+        // New
         var priceSum: Double = 0
-        for item in sortedCartProducts {
+        for item in onCartProducts {
             priceSum += item.product_price
         }
-        
         priceLabel.text = String(format: "$ %.2f", priceSum)
     }
 }
 
 extension CartView {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return sortedCartProducts.count
+//        return cartProducts.count
+        return onCartProducts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CartItemCell", for: indexPath) as! CartItemCell
-        let product = sortedCartProducts[indexPath.row]
+//        let product = cartProducts[indexPath.row]
+        let product = onCartProducts[indexPath.row]
         cell.configure(data: product)
         return cell
     }

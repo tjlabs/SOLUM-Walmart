@@ -22,7 +22,7 @@ class CartItemCell: UICollectionViewCell {
         return imageView
     }()
     
-    private let nameLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.pretendardMedium(size: 8)
         label.textColor = .black
@@ -30,7 +30,7 @@ class CartItemCell: UICollectionViewCell {
         return label
     }()
     
-    private let descriptionLabel: UILabel = {
+    private let nameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.pretendardBold(size: 12)
         label.textColor = .black
@@ -128,17 +128,17 @@ class CartItemCell: UICollectionViewCell {
             make.width.height.equalTo(30)
         }
         
-        addSubview(nameLabel)
-        nameLabel.snp.makeConstraints { make in
+        addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
             make.leading.equalTo(productImageView.snp.trailing).offset(20)
             make.trailing.equalToSuperview().inset(20)
         }
         
-        addSubview(descriptionLabel)
-        descriptionLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom).offset(1)
-            make.leading.equalTo(nameLabel.snp.leading)
+        addSubview(nameLabel)
+        nameLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(1)
+            make.leading.equalTo(titleLabel.snp.leading)
             make.trailing.equalToSuperview().inset(20)
         }
         
@@ -191,18 +191,18 @@ class CartItemCell: UICollectionViewCell {
         }
     }
     
-    func configure(data: Esl) {
+    func configure(data: ProductInfo) {
         if let url = URL(string: data.product_url) {
             productImageView.kf.setImage(with: url, placeholder: UIImage(named: "placeholder"))
         }
         
-        if let checkboxImage = UIImage(named: "ic_checkbox_\(data.color)") {
+        if let checkboxImage = UIImage(named: "ic_checkbox_\(data.category_color)") {
             checkboxImageView.image = checkboxImage
         }
         
+//        titleLabel.text = ""
         nameLabel.text = data.product_name
-//        descriptionLabel.text = data.product_description
-        descriptionLabel.text = "Triscuit Thin Crisps Original Whole Grain Wheat Cracekrs, Vegan Crackers, 7.1 oz"
+//        nameLabel.text = "Triscuit Thin Crisps Original Whole Grain Wheat Cracekrs, Vegan Crackers, 7.1 oz"
         quantityLabel.text = "1"
         priceLabel.text = "$\(data.product_price) ea"
     }

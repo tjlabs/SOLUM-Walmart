@@ -1,37 +1,72 @@
 import Foundation
 
-let ESL_PRODUCT_URL = "https://ap-northeast-2.user.warp.tjlabs.dev/2024-11-29/esl?sector_id="
+let SHOP_PRODUCT_URL = "https://ap-northeast-2.user.warp.tjlabs.dev/2024-12-03/category?sector_id="
 
-// All Products //
-struct Esl: Codable, Equatable, Hashable {
-    var id: String
+struct ShopOutput: Codable, Equatable, Hashable {
+    var category_list: [ShopCategoryList]
+}
+
+struct ShopCategoryList: Codable, Equatable, Hashable {
+    var building_name: String
+    var level_name: String
+    var categories: [ShopCategory]
+}
+
+struct ShopCategory: Codable, Equatable, Hashable {
+    var id: Int
+    var name: String
+    var number: Int
     var color: String
     var x: Double
     var y: Double
-    var duration: String
+    var range: [Double]
+    var products: [ShopProduct]
+}
+
+struct ShopProduct: Codable, Equatable, Hashable {
+    var id: Int
+    var name: String
+    var price: Double
+    var profile: String
+    var on_cart: Bool
+    var image_url: String
+    var esl_id: String
+    var esl_duration: String
+}
+
+// Each Product //
+struct ProductInfo: Codable, Equatable, Hashable {
+    var id: String
+    var led_duration: String
+    
+    var category_name: String
+    var category_number: Int
+    var category_color: String
+    var category_x: Double
+    var category_y: Double
+    var category_range: [Double]
     
     var product_name: String
-    var product_description: String
     var product_price: Double
     var product_url: String
+    var product_profile: String
 }
 
-struct EslList: Codable {
-    var building_name: String
-    var level_name: String
-    var esls: [Esl]
+struct CategoryInfo: Codable, Equatable, Hashable {
+    var name: String
+    var number: Int
+    var color: String
+    var x: Double
+    var y: Double
+    var range: [Double]
 }
 
-struct OutputEsl: Codable {
-    var esl_list: [EslList]
-}
 
-// Cart Products //
-struct CartInput: Codable {
-    var sector_id: Int
-    var user_id: String
-}
-
-struct CartOutput: Codable {
-    
+struct ESL: Codable, Equatable, Hashable {
+    var id: String
+    var category_x: Double
+    var category_y: Double
+    var product_name: String
+    var led_color: String
+    var led_duration: String
 }

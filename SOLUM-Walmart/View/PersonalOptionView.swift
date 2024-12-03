@@ -69,10 +69,12 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
                               "highfiber", "lowcalories"]
     
     let cellItemLabelNames = ["Vegan", "Gluten Free", "No Allergent", "No Soy",
-                              "No Sugar", "No Preservatives", "No Wheat", "No Corn",
+                              "Sugar Free", "No Preservatives", "No Wheat", "No Corn",
                               "No GMO", "Lactose Free", "No Artificial Colours", "Contains Probiotics",
                               "Contains Taurine", "Hypo Allergenic", "Natural Vitamins", "High Quality Proteins",
                               "High Fiber", "Low Calories"]
+    
+    let defaultCellItemLabelNames = ["Vegan", "Gluten Free", "Lactose Free", "Sugar Free"]
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -245,6 +247,13 @@ extension PersonalOptionView {
         }
         
         cell.configure(imageName: imageName, label: labelText)
+
+        if defaultCellItemLabelNames.contains(labelText) {
+            cell.isSelectedState = true
+            cell.uncheckedImageView.image = UIImage(named: "ic_checkbox_GREEN")
+            PersonalOptionView.selectedLabels.append(labelText)
+        }
+        
         return cell
     }
     

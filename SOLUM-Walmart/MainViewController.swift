@@ -13,13 +13,11 @@ class MainViewController: UIViewController {
     private let viewModel = CartViewModel()
     private var currentSubview: UIView?
     
-    let sector_id: Int = 4
+    let sector_id: Int = 2
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fetchESLtData()
         fetchAllProducts()
-        fetchCartProducts()
     }
     
     override func viewDidLoad() {
@@ -50,16 +48,8 @@ class MainViewController: UIViewController {
         showCartView()
     }
     
-    private func fetchESLtData() {
-        viewModel.fetchEslData(input: self.sector_id)
-    }
-    
     private func fetchAllProducts() {
         viewModel.fetchAllProductsa(input: self.sector_id)
-    }
-    
-    private func fetchCartProducts() {
-        viewModel.fetchCartProducts(input: self.sector_id)
     }
     
     private func showCartView() {
@@ -70,26 +60,40 @@ class MainViewController: UIViewController {
             personalOptionView.isHidden = false
         }
         
-        cartView.onFindProductImageViewTapped = { [weak self] sortedCartProducts in
+        cartView.onFindProductImageViewTapped = { [weak self] onCartProducts, offCartProducts in
             guard let self = self else { return }
             self.removeCurrentSubview(cartView)
-            self.showFindProductView(with: sortedCartProducts)
+            self.showFindProductView(onCartProducts: onCartProducts, offCartProducts: offCartProducts)
+//            self.showFindProductView(with: sortedCartProducts)
         }
         
-        viewModel.eslData
-            .subscribe(onNext: { [weak cartView] eslData in
-                guard let eslData = eslData else { return }
-                cartView?.updateProducts(eslData)
+        viewModel.allProductsData
+            .subscribe(onNext: { [weak cartView] allProducts in
+                guard let allProducts = allProducts else { return }
+                cartView?.updateAllProducts(outputProducts: allProducts)
             })
             .disposed(by: disposeBag)
         moveToSubview(cartView)
     }
     
-    private func showFindProductView(with sortedCartProducts: [Esl]) {
+//    private func showFindProductView(with sortedCartProducts: [Esl]) {
+//        let findProductView = FindProductView()
+//
+//        findProductView.configure(with: sortedCartProducts)
+//        
+//        findProductView.onBackTappedInFindProductView = { [weak self] in
+//            guard let self = self else { return }
+//            self.removeCurrentSubview(findProductView)
+//            self.personalOptionView.isHidden = false
+//        }
+//        
+//        moveToSubview(findProductView)
+//    }
+    
+    private func showFindProductView(onCartProducts: [ProductInfo], offCartProducts: [ProductInfo]) {
         let findProductView = FindProductView()
-
-        findProductView.configure(with: sortedCartProducts)
-        
+//        findProductView.configure(with: sortedCartProducts)
+        findProductView.configure(onCartProducts: onCartProducts, offCartProducts: offCartProducts)
         findProductView.onBackTappedInFindProductView = { [weak self] in
             guard let self = self else { return }
             self.removeCurrentSubview(findProductView)

@@ -5,7 +5,7 @@ import OlympusSDK
 
 class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScaleDelegate {
     func mapScaleUpdated() {
-        plotProducts(products: self.sortedCartProducts)
+        plotOnCartProducts(products: self.onCartProducts)
     }
     
     func sliderValueChanged(index: Int, value: Double) {
@@ -17,19 +17,29 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         if currentIndex > preIndex {
             mapView.updateResultInMap(result: result)
             let userCoord = [result.x, result.y, result.absolute_heading]
-            let nearbyEslList = checkNearbyESL(user: userCoord)
-            for esl in nearbyEslList {
-                activateESL(esl: esl)
-                let contents = makeEslContents(user: userCoord, esl: esl)
-                showNearbyProduct(url: esl.product_url, title: esl.product_name, contents: contents)
+            if let nearbyCategory = checkNearbyCategory(user: userCoord) {
+                let validESLs = checkMatchingProducts(categoryInfo: nearbyCategory)
+//                activateValidESLs(validESLs: validESLs.0)
+                
+                for product in validESLs.1 {
+                    let contents = makeProductContents(user: userCoord, product: product)
+                    let contentsUI = makeContentsUI(product: product)
+                    showNearbyProduct(categoryUI: contentsUI, title: product.product_name, contents: contents)
+                }
             }
         }
         preIndex = currentIndex
     }
     
     func report(flag: Int) { }
-    
-    private var sortedCartProducts: [Esl] = []
+
+    private var onCartProducts = [ProductInfo]()
+    private var offCartProducts = [ProductInfo]()
+    private var categoryDrawed = [Int]()
+    private var categoryList = Set<CategoryInfo>()
+    private var personalProfile = [String]()
+    private let defaultColor = "CYAN"
+    private let profileColorDict: [String: String] = ["Vegan":"GREEN", "Gluten Free":"RED", "Lactose Free":"WHITE", "Sugar Free":"YELLOW"]
     var eslDict = [String: Double]()
     let REQ_DISTANCE: Double = 2.0
     let REQ_LED_TIME: Double = 20*1000
@@ -98,10 +108,23 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         return view
     }()
     
-    private let productImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
+    private var categoryUIView: UIView = {
+        let categoryView = UIView()
+        categoryView.backgroundColor = .clear
+        let markerSize: Double = 24
+        categoryView.layer.cornerRadius = markerSize/4
+        
+        return categoryView
+    }()
+    
+    private var categoryLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = UIFont.pretendardBold(size: 16)
+        label.textColor = .white
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
+        return label
     }()
     
     private let productNameLabel: UILabel = {
@@ -127,6 +150,8 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         setupLayout()
         setupActions()
         bindActions()
+        personalProfile = PersonalOptionView.selectedLabels
+        print("(FindProductView) : personalProfile = \(personalProfile)")
         
         // Olympus Service
         self.notificationCenterAddObserver()
@@ -147,41 +172,51 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         self.notificationCenterRemoveObserver()
     }
     
-    func configure(with products: [Esl]) {
-        self.sortedCartProducts = products
+    func configure(onCartProducts: [ProductInfo], offCartProducts: [ProductInfo]) {
+        self.onCartProducts = onCartProducts
+        self.offCartProducts = offCartProducts
+        print("(FindProductView) : onCartProducts = \(self.onCartProducts)")
+        print("(FindProductView) : offCartProducts = \(self.offCartProducts)")
     }
     
-    private func plotProducts(products: [Esl]) {
+    private func plotOnCartProducts(products: [ProductInfo]) {
+        categoryDrawed = []
         let mapAndPpScaleValues = mapView.mapAndPpScaleValues
-        print("(FindProductView) : plotProduct // products = \(products)")
         for item in products {
-            let productView = makeProductUIView(product: item, scales: mapAndPpScaleValues)
-            mapView.plotUnitUsingCoord(unitView: productView)
+            let categoryNumber = item.category_number
+            if !categoryDrawed.contains(categoryNumber) {
+                let productView = makeOnCartUIView(product: item, scales: mapAndPpScaleValues)
+                mapView.plotUnitUsingCoord(unitView: productView)
+                categoryDrawed.append(categoryNumber)
+                let categoryInfo = CategoryInfo(name: item.category_name, number: item.category_number, color: item.category_color, x: item.category_x, y: item.category_y, range: item.category_range)
+                categoryList.insert(categoryInfo)
+            }
         }
     }
     
-    private func makeProductUIView(product: Esl, scales: [Double]) -> UIView {
-        let productColor = product.color
-        var productViewColor = UIColor.white
-        switch(productColor) {
+    private func makeOnCartUIView(product: ProductInfo, scales: [Double]) -> UIView {
+        let categoryColor = product.category_color
+        let categoryNumber = product.category_number
+        var categoryViewColor = UIColor.white
+        switch(categoryColor) {
         case "RED":
-            productViewColor = RED_COLOR
+            categoryViewColor = RED_COLOR
         case "GREEN":
-            productViewColor = GREEN_COLOR
+            categoryViewColor = GREEN_COLOR
         case "YELLOW":
-            productViewColor = YELLOW_COLOR
+            categoryViewColor = YELLOW_COLOR
         case "BLUE":
-            productViewColor = BLUE_COLOR
+            categoryViewColor = BLUE_COLOR
         case "MAGENTA":
-            productViewColor = MAGENTA_COLOR
+            categoryViewColor = MAGENTA_COLOR
         case "WHITE":
-            productViewColor = WHITE_COLOR
+            categoryViewColor = WHITE_COLOR
         default:
-            productViewColor = WHITE_COLOR
+            categoryViewColor = WHITE_COLOR
         }
         
-        let x = product.x
-        let y = -product.y
+        let x = product.category_x
+        let y = -product.category_y
         
         let transformedX = (x - scales[2])*scales[0]
         let transformedY = (y - scales[3])*scales[1]
@@ -189,12 +224,46 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         let rotatedX = transformedX
         let rotatedY = transformedY
         
-        let markerSize: Double = 20
-        let productView = UIView(frame: CGRect(x: rotatedX - markerSize/2, y: rotatedY - markerSize/2, width: markerSize, height: markerSize))
-        productView.backgroundColor = productViewColor
-        productView.layer.cornerRadius = markerSize/4
+        let markerSize: Double = 24
+        let categoryView = UIView(frame: CGRect(x: rotatedX - markerSize/2, y: rotatedY - markerSize/2, width: markerSize, height: markerSize))
+        categoryView.backgroundColor = categoryViewColor
+        categoryView.layer.cornerRadius = markerSize/4
         
-        return productView
+        let categoryLabel = UILabel()
+        categoryLabel.text = "\(categoryNumber)"
+        categoryLabel.textAlignment = .center
+        categoryLabel.font = UIFont.pretendardBold(size: 12)
+        categoryLabel.textColor = .white
+        categoryLabel.frame = categoryView.bounds
+        categoryLabel.adjustsFontSizeToFitWidth = true
+        categoryLabel.minimumScaleFactor = 0.5
+        categoryView.addSubview(categoryLabel)
+        
+        return categoryView
+    }
+    
+    private func makeContentsUI(product: ProductInfo) -> (UIColor, String) {
+        let categoryColor = product.category_color
+        let categoryNumber = String(product.category_number)
+        var categoryViewColor = UIColor.white
+        switch(categoryColor) {
+        case "RED":
+            categoryViewColor = RED_COLOR
+        case "GREEN":
+            categoryViewColor = GREEN_COLOR
+        case "YELLOW":
+            categoryViewColor = YELLOW_COLOR
+        case "BLUE":
+            categoryViewColor = BLUE_COLOR
+        case "MAGENTA":
+            categoryViewColor = MAGENTA_COLOR
+        case "WHITE":
+            categoryViewColor = WHITE_COLOR
+        default:
+            categoryViewColor = WHITE_COLOR
+        }
+        
+        return (categoryViewColor, categoryNumber)
     }
     
     private func setupLayout() {
@@ -246,20 +315,25 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             make.top.equalTo(refreshLabel.snp.bottom).offset(5)
             make.leading.equalTo(containerView.snp.leading).inset(20)
             make.trailing.equalTo(containerView.snp.trailing).inset(20)
-            make.height.equalTo(100)
+            make.height.equalTo(60)
         }
         
-        nearbyView.addSubview(productImageView)
-        productImageView.snp.makeConstraints { make in
+        nearbyView.addSubview(categoryUIView)
+        categoryUIView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(10)
             make.leading.equalToSuperview().inset(10)
-            make.width.equalTo(120)
+            make.width.height.equalTo(40)
+        }
+        
+        categoryUIView.addSubview(categoryLabel)
+        categoryLabel.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview().inset(2)
         }
         
         nearbyView.addSubview(productNameLabel)
         productNameLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
-            make.leading.equalTo(productImageView.snp.trailing).offset(20)
+            make.leading.equalTo(categoryUIView.snp.trailing).offset(20)
             make.trailing.equalToSuperview().inset(20)
         }
         
@@ -289,26 +363,16 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         }
     }
     
-//    private func showNearbyProduct(url: String, title: String, contents: String) {
-//        nearbyView.isHidden = false
-//        if let url = URL(string: url) {
-//            productImageView.kf.setImage(with: url, placeholder: UIImage(named: "placeholder"))
-//        }
-//        productNameLabel.text = title
-//        productContentsLabel.text = contents
-//    }
-    
-    private func showNearbyProduct(url: String, title: String, contents: String) {
+    private func showNearbyProduct(categoryUI: (UIColor, String), title: String, contents: String) {
         DispatchQueue.main.async { [self] in
+            
             nearbyView.isHidden = false
             nearbyView.alpha = 0.0
             UIView.animate(withDuration: 0.3) {
                 self.nearbyView.alpha = 1.0
             }
-
-            if let url = URL(string: url) {
-                productImageView.kf.setImage(with: url, placeholder: UIImage(named: "placeholder"))
-            }
+            categoryUIView.backgroundColor = categoryUI.0
+            categoryLabel.text = categoryUI.1
             productNameLabel.text = title
             productContentsLabel.text = contents
 
@@ -321,31 +385,6 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             }
         }
     }
-
-    
-//    private func showMapSettingView() {
-//        let mapSettingView = MapSettingView()
-//        mapSettingView.onConfirm = { [weak self] in
-//            print("Confirm tapped")
-////            self?.mapView.setIsPpHidden(flag: true)
-//        }
-//        mapSettingView.onCancel = { [weak self] in
-//            print("Cancel tapped")
-////            self?.mapView.setIsPpHidden(flag: true)
-//        }
-//        
-//        mapSettingView.onReset = { [weak self] in
-//            print("Reset tapped")
-////            self?.mapView.setIsPpHidden(flag: true)
-//        }
-//
-//        if let parentView = self.superview {
-//            parentView.addSubview(mapSettingView)
-//            mapSettingView.snp.makeConstraints { make in
-//                make.edges.equalToSuperview()
-//            }
-//        }
-//    }
     
     private func showMapSettingView() {
         let mapSettingView = MapSettingView()
@@ -530,21 +569,62 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     }
     
     // ESL Activation //
-    private func activateESL(esl: Esl) {
-        let esl_id = esl.id
-        let esl_color = esl.color
-        let esl_duration = esl.duration
-        let ledBlink = ledBlink(labelCode: esl_id, color: esl_color, duration: esl_duration, patternId: 0, multiLed: false)
-        let eslInput = ESL_RUN_INPUT(ledBlinkList: [ledBlink])
-        NetworkManager.shared.putESL(url: SOLUM_ESL_URL, input: eslInput, completion: { [self] statusCode, returnedString in
-//            print("(FindProductView) ESL : code = \(statusCode)")
-//            print("(FindProductView) ESL : returnedString = \(returnedString)")
-        })
+    // Product Check
+    private func checkNearbyCategory(user: [Double]) -> CategoryInfo? {
+        let categories = self.categoryList
+        for category in categories {
+            let categoryX = category.x
+            let categoryY = category.y
+            
+            let range = category.range
+            if user[0] >= range[0] && user[0] <= range[1] && user[1] >= range[2] && user[1] <= range[3] {
+                return category
+            }
+        }
+        return nil
     }
     
-    private func makeEslContents(user: [Double], esl: Esl) -> String {
-        let dx = esl.x - user[0]
-        let dy = esl.y - user[1]
+    private func checkMatchingProducts(categoryInfo: CategoryInfo) -> ([ESL], [ProductInfo]) {
+        var eslList = [ESL]()
+        var productsForContents = [ProductInfo]()
+        
+        // On Cart Check
+        for product in self.onCartProducts {
+            if product.category_number == categoryInfo.number {
+                let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: self.defaultColor, led_duration: product.led_duration)
+                eslList.append(esl)
+                productsForContents.append(product)
+            }
+        }
+        
+        // Off Cart Check
+        for product in self.offCartProducts {
+            if product.category_number == categoryInfo.number {
+                if self.personalProfile.contains(product.product_profile) {
+                    if let ledColor = self.profileColorDict[product.product_profile] {
+                        let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
+                        eslList.append(esl)
+                    }
+                }
+            }
+        }
+        
+        return (eslList, productsForContents)
+    }
+    
+    private func activateValidESLs(validESLs: [ESL]) {
+        var ledBlinkList = [ledBlink]()
+        for esl in validESLs {
+            let ledBlink = ledBlink(labelCode: esl.id, color: esl.led_color, duration: esl.led_duration, patternId: 0, multiLed: false)
+            ledBlinkList.append(ledBlink)
+        }
+        let eslInput = ESL_RUN_INPUT(ledBlinkList: ledBlinkList)
+        NetworkManager.shared.putESL(url: SOLUM_ESL_URL, input: eslInput, completion: { [self] statusCode, returnedString in })
+    }
+    
+    private func makeProductContents(user: [Double], product: ProductInfo) -> String {
+        let dx = product.category_x - user[0]
+        let dy = product.category_y - user[1]
 
         var relativeAngle = atan2(Double(dy), Double(dx)) * 180 / .pi
         if relativeAngle < 0 { relativeAngle += 360 }
@@ -564,38 +644,5 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         default:
             return "The product is in [ Back ]"
         }
-    }
-    
-    private func checkNearbyESL(user: [Double]) -> [Esl] {
-        var nearByEsl = [Esl]()
-        
-        let products = self.sortedCartProducts
-        for product in products {
-            let productX = product.x
-            let productY = product.y
-            
-            let diffX = user[0] - productX
-            let diffY = user[1] - productY
-            let distance = sqrt(diffX*diffX + diffY*diffY)
-//            print(getLocalTimeString() + " , (FindProductView) product = \(product.product_name) // distance = \(distance)")
-            let currentTime = getCurrentTimeInMillisecondsDouble()
-            if distance < REQ_DISTANCE {
-                let eslId = product.id
-                if let preTagTime = eslDict[eslId] {
-                    // 태깅한적 있음
-                    if currentTime - preTagTime > REQ_LED_TIME {
-                        // Taging한지 10초 지남
-                        nearByEsl.append(product)
-                    }
-                } else {
-                    // 최초
-                    nearByEsl.append(product)
-                }
-                eslDict[eslId] = currentTime
-            }
-        }
-//        print(getLocalTimeString() + " , (FindProductView) nearByEsl = \(nearByEsl)")
-        
-        return nearByEsl
     }
 }
