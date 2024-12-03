@@ -17,15 +17,42 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         if currentIndex > preIndex {
             mapView.updateResultInMap(result: result)
             let userCoord = [result.x, result.y, result.absolute_heading]
-            if let nearbyCategory = checkNearbyCategory(user: userCoord) {
+            let nearbyCategories = checkNearbyCategories(user: userCoord)
+            
+            for nearbyCategory in nearbyCategories {
                 let validESLs = checkMatchingProducts(categoryInfo: nearbyCategory)
-//                activateValidESLs(validESLs: validESLs.0)
+                if !validESLs.0.isEmpty {
+                    print("(FindProductView) : ESL for LED")
+                    for item in validESLs.0 {
+                        print("(FindProductView) : ESL ID = \(item.id)")
+                        print("(FindProductView) : ESL Color = \(item.led_color)")
+                    }
+                }
+                activateValidESLs(validESLs: validESLs.0)
                 
-                for product in validESLs.1 {
+                
+                let validProducts = checkMatchingProductForContents(categoryInfo: nearbyCategory, user: userCoord)
+                for product in validProducts {
                     let contents = makeProductContents(user: userCoord, product: product)
                     let contentsUI = makeContentsUI(product: product)
                     showNearbyProduct(categoryUI: contentsUI, title: product.product_name, contents: contents)
                 }
+                
+//                if !validESLs.1.isEmpty {
+//                    print("(FindProductView) : Off Cart ESL")
+//                    for item in validESLs.1 {
+//                        print("(FindProductView) : ESL ID = \(item.id)")
+//                        print("(FindProductView) : Category Color = \(item.category_color)")
+//                    }
+//                    print("(FindProductView) : -----------------------------)")
+//                }
+//                
+//                
+//                for product in validESLs.1 {
+//                    let contents = makeProductContents(user: userCoord, product: product)
+//                    let contentsUI = makeContentsUI(product: product)
+//                    showNearbyProduct(categoryUI: contentsUI, title: product.product_name, contents: contents)
+//                }
             }
         }
         preIndex = currentIndex
@@ -41,6 +68,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private let defaultColor = "CYAN"
     private let profileColorDict: [String: String] = ["Vegan":"GREEN", "Gluten Free":"RED", "Lactose Free":"WHITE", "Sugar Free":"YELLOW"]
     var eslDict = [String: Double]()
+    var productDict = [String: Double]()
     let REQ_DISTANCE: Double = 2.0
     let REQ_LED_TIME: Double = 20*1000
     
@@ -157,10 +185,10 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         self.notificationCenterAddObserver()
         
         // MapView
+        mapView.delegate = self
         mapView.setIsPpHidden(flag: true)
         OlympusMapManager.shared.loadMapForScale(region: "Korea", sector_id: sector_id, mapView: mapView)
         setupMapView()
-        mapView.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -175,8 +203,15 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     func configure(onCartProducts: [ProductInfo], offCartProducts: [ProductInfo]) {
         self.onCartProducts = onCartProducts
         self.offCartProducts = offCartProducts
-        print("(FindProductView) : onCartProducts = \(self.onCartProducts)")
-        print("(FindProductView) : offCartProducts = \(self.offCartProducts)")
+        print("(FindProductView) : onCartProduct")
+        for item in self.onCartProducts {
+            print("(FindProductView) : ID = \(item.id) // profile = \(item.product_profile) // range = \(item.category_range)")
+        }
+        
+        print("(FindProductView) : offCartProducts")
+        for item in self.offCartProducts {
+            print("(FindProductView) : ID = \(item.id) // profile = \(item.product_profile) // range = \(item.category_range)")
+        }
     }
     
     private func plotOnCartProducts(products: [ProductInfo]) {
@@ -570,30 +605,40 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     
     // ESL Activation //
     // Product Check
-    private func checkNearbyCategory(user: [Double]) -> CategoryInfo? {
+    private func checkNearbyCategories(user: [Double]) -> [CategoryInfo] {
+        var nearbyCategories = [CategoryInfo]()
         let categories = self.categoryList
         for category in categories {
-            let categoryX = category.x
-            let categoryY = category.y
-            
             let range = category.range
             if user[0] >= range[0] && user[0] <= range[1] && user[1] >= range[2] && user[1] <= range[3] {
-                return category
+                nearbyCategories.append(category)
             }
         }
-        return nil
+        return nearbyCategories
     }
     
     private func checkMatchingProducts(categoryInfo: CategoryInfo) -> ([ESL], [ProductInfo]) {
+        let currentTime = getCurrentTimeInMillisecondsDouble()
+        
         var eslList = [ESL]()
         var productsForContents = [ProductInfo]()
         
         // On Cart Check
         for product in self.onCartProducts {
             if product.category_number == categoryInfo.number {
-                let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: self.defaultColor, led_duration: product.led_duration)
-                eslList.append(esl)
-                productsForContents.append(product)
+                if let preTime = eslDict[product.id] {
+                    if currentTime - preTime > REQ_LED_TIME {
+                        let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: self.defaultColor, led_duration: product.led_duration)
+                        eslList.append(esl)
+                        productsForContents.append(product)
+                        eslDict[product.id] = currentTime
+                    }
+                } else {
+                    let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: self.defaultColor, led_duration: product.led_duration)
+                    eslList.append(esl)
+                    productsForContents.append(product)
+                    eslDict[product.id] = currentTime
+                }
             }
         }
         
@@ -602,14 +647,52 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             if product.category_number == categoryInfo.number {
                 if self.personalProfile.contains(product.product_profile) {
                     if let ledColor = self.profileColorDict[product.product_profile] {
-                        let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
-                        eslList.append(esl)
+                        if let preTime = eslDict[product.id] {
+                            if currentTime - preTime > REQ_LED_TIME {
+                                let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
+                                eslList.append(esl)
+                                eslDict[product.id] = currentTime
+                            }
+                        } else {
+                            let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
+                            eslList.append(esl)
+                            eslDict[product.id] = currentTime
+                        }
                     }
                 }
             }
         }
         
         return (eslList, productsForContents)
+    }
+    
+    private func checkMatchingProductForContents(categoryInfo: CategoryInfo, user: [Double]) -> [ProductInfo] {
+        let currentTime = getCurrentTimeInMillisecondsDouble()
+        var productsForContents = [ProductInfo]()
+        for product in self.onCartProducts {
+            if product.category_number == categoryInfo.number {
+                if let preTime = productDict[product.id] {
+                    if currentTime - preTime > REQ_LED_TIME {
+                        let diffX = product.category_x - user[0]
+                        let diffY = product.category_y - user[1]
+                        let distance = sqrt(diffX*diffX + diffY*diffY)
+                        if distance < REQ_DISTANCE {
+                            productsForContents.append(product)
+                            productDict[product.id] = currentTime
+                        }
+                    }
+                } else {
+                    let diffX = product.category_x - user[0]
+                    let diffY = product.category_y - user[1]
+                    let distance = sqrt(diffX*diffX + diffY*diffY)
+                    if distance < REQ_DISTANCE {
+                        productsForContents.append(product)
+                        productDict[product.id] = currentTime
+                    }
+                }
+            }
+        }
+        return productsForContents
     }
     
     private func activateValidESLs(validESLs: [ESL]) {

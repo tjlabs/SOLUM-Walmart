@@ -133,7 +133,7 @@ class HeaderView: UIView {
             make.centerY.equalToSuperview()
         }
         
-        addSubview(cartCountView)
+        cartImageView.addSubview(cartCountView)
         cartCountView.snp.makeConstraints { make in
             make.width.height.equalTo(16)
             make.top.equalTo(cartImageView.snp.top).offset(-7)

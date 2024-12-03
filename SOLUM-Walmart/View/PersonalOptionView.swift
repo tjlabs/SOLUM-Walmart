@@ -172,8 +172,10 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
             self?.onSearchTapped?()
         }
         
-        headerView.onCartImageViewTapped = { [weak self] in
-            self?.onCartTappedInPersonalOptionView?()
+        headerView.onCartImageViewTapped = {
+            if self.isDoneTapped {
+                self.onCartTappedInPersonalOptionView?()
+            }
         }
         
         headerView.onPersonImageViewTapped = { [weak self] in
