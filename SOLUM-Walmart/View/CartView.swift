@@ -208,6 +208,10 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         configureCartView()
     }
     
+    func updateAllProducts() {
+        
+    }
+    
     private func configureCartView() {
 //        sortedCartProducts = self.cartItems.sorted(by: { $0.product_price < $1.product_price })
         sortedCartProducts = cartItems

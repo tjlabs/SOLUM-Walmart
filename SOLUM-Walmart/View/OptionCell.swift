@@ -13,8 +13,9 @@ class OptionCell: UICollectionViewCell {
     private let mainImageView = UIImageView()
     private let uncheckedImageView = UIImageView()
     private let titleLabel = UILabel()
+    var labelText: String = ""
     
-    private var isSelectedState = false
+    public var isSelectedState = false
     private let randomImages = [
         "ic_checkbox_RED", "ic_checkbox_GREEN", "ic_checkbox_YELLOW",
         "ic_checkbox_BLUE", "ic_checkbox_MAGENTA", "ic_checkbox_CYAN", "ic_checkbox_WHITE"
@@ -73,6 +74,7 @@ class OptionCell: UICollectionViewCell {
                 uncheckedImageView.image = UIImage(named: "ic_uncheckedBox")
                 titleLabel.text = label
             }
+            labelText = label
         }
     }
     

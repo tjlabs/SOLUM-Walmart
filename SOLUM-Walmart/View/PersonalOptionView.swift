@@ -2,6 +2,8 @@ import UIKit
 import SnapKit
 
 class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    static var selectedLabels: [String] = []
+    
     var onBackTapped: (() -> Void)?
     var onSearchTapped: (() -> Void)?
     var onCartTappedInPersonalOptionView: (() -> Void)?
@@ -68,7 +70,7 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
     
     let cellItemLabelNames = ["Vegan", "Gluten Free", "No Allergent", "No Soy",
                               "No Sugar", "No Preservatives", "No Wheat", "No Corn",
-                              "No GMO", "No Milk", "No Artificial Colours", "Contains Probiotics",
+                              "No GMO", "Lactose Free", "No Artificial Colours", "Contains Probiotics",
                               "Contains Taurine", "Hypo Allergenic", "Natural Vitamins", "High Quality Proteins",
                               "High Fiber", "Low Calories"]
 
@@ -206,9 +208,16 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
             isDoneTapped = true
             collectionView.isUserInteractionEnabled = false
             doneImageView.image = UIImage(named: "ic_done_disable")
+            
+            PersonalOptionView.selectedLabels = getSelectedLabels()
         }
         
         onDoneImageViewTapped?()
+    }
+    
+    private func getSelectedLabels() -> [String] {
+        guard let visibleCells = collectionView.visibleCells as? [OptionCell] else { return [] }
+        return visibleCells.compactMap { $0.isSelectedState ? $0.labelText : nil }
     }
     
     @objc private func refreshLabelTapped() {

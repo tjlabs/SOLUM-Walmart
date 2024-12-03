@@ -2,13 +2,14 @@ import Foundation
 
 let ESL_PRODUCT_URL = "https://ap-northeast-2.user.warp.tjlabs.dev/2024-11-29/esl?sector_id="
 
-// Products //
+// All Products //
 struct Esl: Codable, Equatable, Hashable {
     var id: String
     var color: String
     var x: Double
     var y: Double
     var duration: String
+    
     var product_name: String
     var product_description: String
     var product_price: Double
@@ -23,4 +24,14 @@ struct EslList: Codable {
 
 struct OutputEsl: Codable {
     var esl_list: [EslList]
+}
+
+// Cart Products //
+struct CartInput: Codable {
+    var sector_id: Int
+    var user_id: String
+}
+
+struct CartOutput: Codable {
+    
 }

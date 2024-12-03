@@ -32,7 +32,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private var sortedCartProducts: [Esl] = []
     var eslDict = [String: Double]()
     let REQ_DISTANCE: Double = 2.0
-    let REQ_LED_TIME: Double = 10*1000
+    let REQ_LED_TIME: Double = 20*1000
     
     private let backgroundView = BackgroundView()
     private let headerView = HeaderView(title: "Find Product")
@@ -149,12 +149,10 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     
     func configure(with products: [Esl]) {
         self.sortedCartProducts = products
-        print("(FindProductView) : Received products: \(products)")
     }
     
     private func plotProducts(products: [Esl]) {
         let mapAndPpScaleValues = mapView.mapAndPpScaleValues
-        print("(FindProductView) : plotProduct // mapAndPpScaleValues = \(mapAndPpScaleValues)")
         print("(FindProductView) : plotProduct // products = \(products)")
         for item in products {
             let productView = makeProductUIView(product: item, scales: mapAndPpScaleValues)
@@ -285,6 +283,10 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             self.mapView.setIsPpHidden(flag: false)
             self.showMapSettingView()
         }
+        
+        headerView.onPersonImageViewTapped = {
+            self.showCoordSettingView()
+        }
     }
     
 //    private func showNearbyProduct(url: String, title: String, contents: String) {
@@ -384,6 +386,21 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         }
     }
     
+    private func showCoordSettingView() {
+        let coordSettingView = CoordSettingView()
+        coordSettingView.alpha = 0.5
+        
+        addSubview(coordSettingView)
+        coordSettingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        coordSettingView.onSave = {
+            let cachedCoords = CoordSettingView.loadCoordFromCache()
+            print("Saved Coords: x=\(cachedCoords.x), y=\(cachedCoords.y), heading=\(cachedCoords.heading)")
+        }
+    }
+    
     private func saveMapScaleToCache(key: String, value: [Double]) {
         print(getLocalTimeString() + " , (FindProductView) Save \(key) scale : \(value)")
         do {
@@ -421,10 +438,12 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             print("(FindProductView) Start Label Tapped : Running -> Stop")
             startLabel.text = "Start"
             isServiceStarted = false
+            stopService()
         } else {
             print("(FindProductView) Start Label Tapped : Stop -> Running")
             startLabel.text = "Service is running.."
             isServiceStarted = true
+            startService()
         }
     }
         
@@ -436,7 +455,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
                 self.aisleGuideImageView.transform = .identity
             }
         })
-        startService()
+        
         onAisleGuideImageViewTapped?()
     }
     
@@ -479,7 +498,14 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     }
     
     private func startService() {
-        serviceManager.setDeadReckoningMode(flag: true, buildingName: "S3", levelName: "7F", x: 16, y: 13, heading: 180)
+        let cachedCoords = CoordSettingView.loadCoordFromCache()
+
+        let startX = Int(cachedCoords.x)
+        let startY = Int(cachedCoords.y)
+        let startHeading = cachedCoords.heading
+        
+        serviceManager.setDeadReckoningMode(flag: true, buildingName: "S3", levelName: "7F", x: startX, y: startY, heading: startHeading)
+//        serviceManager.setDeadReckoningMode(flag: true, buildingName: "S3", levelName: "7F", x: 16, y: 13, heading: 180)
         
         let uniqueId = makeUniqueId(uuid: self.user_id)
         serviceManager.addObserver(self)
@@ -517,7 +543,27 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     }
     
     private func makeEslContents(user: [Double], esl: Esl) -> String {
-        return "This product is on left"
+        let dx = esl.x - user[0]
+        let dy = esl.y - user[1]
+
+        var relativeAngle = atan2(Double(dy), Double(dx)) * 180 / .pi
+        if relativeAngle < 0 { relativeAngle += 360 }
+
+        // Difference between heading and relative angle
+        let angleDiff = (relativeAngle - user[2] + 360).truncatingRemainder(dividingBy: 360)
+        let adjustedAngleDiff = angleDiff > 180 ? angleDiff - 360 : angleDiff
+
+        // Determine direction
+        switch adjustedAngleDiff {
+        case -25..<25:
+            return "The product is in [ Front ]"
+        case 25..<155:
+            return "The product is in [ Left ]"
+        case -155..<(-25):
+            return "The product is in [ Right ]"
+        default:
+            return "The product is in [ Back ]"
+        }
     }
     
     private func checkNearbyESL(user: [Double]) -> [Esl] {

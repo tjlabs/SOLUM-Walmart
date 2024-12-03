@@ -18,6 +18,8 @@ class MainViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchESLtData()
+        fetchAllProducts()
+        fetchCartProducts()
     }
     
     override func viewDidLoad() {
@@ -52,6 +54,14 @@ class MainViewController: UIViewController {
         viewModel.fetchEslData(input: self.sector_id)
     }
     
+    private func fetchAllProducts() {
+        viewModel.fetchAllProductsa(input: self.sector_id)
+    }
+    
+    private func fetchCartProducts() {
+        viewModel.fetchCartProducts(input: self.sector_id)
+    }
+    
     private func showCartView() {
         personalOptionView.isHidden = true
         let cartView = CartView()
@@ -60,10 +70,6 @@ class MainViewController: UIViewController {
             personalOptionView.isHidden = false
         }
         
-//        cartView.onFindProductImageViewTapped = { [self] in
-//            self.removeCurrentSubview(cartView)
-//            showFindProductView()
-//        }
         cartView.onFindProductImageViewTapped = { [weak self] sortedCartProducts in
             guard let self = self else { return }
             self.removeCurrentSubview(cartView)
@@ -78,16 +84,6 @@ class MainViewController: UIViewController {
             .disposed(by: disposeBag)
         moveToSubview(cartView)
     }
-    
-//    private func showFindProductView() {
-//        let findProductView = FindProductView()
-//        findProductView.onBackTappedInFindProductView = { [self] in
-//            self.removeCurrentSubview(findProductView)
-//            personalOptionView.isHidden = false
-//        }
-//        
-//        moveToSubview(findProductView)
-//    }
     
     private func showFindProductView(with sortedCartProducts: [Esl]) {
         let findProductView = FindProductView()
