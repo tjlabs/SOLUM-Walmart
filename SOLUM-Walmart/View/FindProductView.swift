@@ -65,8 +65,8 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private var categoryDrawed = [Int]()
     private var categoryList = Set<CategoryInfo>()
     private var personalProfile = [String]()
-    private let defaultColor = "CYAN"
-    private let profileColorDict: [String: String] = ["Vegan":"GREEN", "Gluten Free":"RED", "Lactose Free":"WHITE", "Sugar Free":"YELLOW"]
+    private let defaultColor = "WHITE"
+    private let profileColorDict: [String: String] = ["Vegan":"GREEN", "Gluten Free":"RED", "Lactose Free":"BLUE", "Sugar Free":"MAGENTA"]
     var eslDict = [String: Double]()
     var productDict = [String: Double]()
     let REQ_DISTANCE: Double = 2.0
@@ -239,23 +239,24 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private func makeOnCartUIView(product: ProductInfo, scales: [Double]) -> UIView {
         let categoryColor = product.category_color
         let categoryNumber = product.category_number
-        var categoryViewColor = UIColor.white
-        switch(categoryColor) {
-        case "RED":
-            categoryViewColor = RED_COLOR
-        case "GREEN":
-            categoryViewColor = GREEN_COLOR
-        case "YELLOW":
-            categoryViewColor = YELLOW_COLOR
-        case "BLUE":
-            categoryViewColor = BLUE_COLOR
-        case "MAGENTA":
-            categoryViewColor = MAGENTA_COLOR
-        case "WHITE":
-            categoryViewColor = WHITE_COLOR
-        default:
-            categoryViewColor = WHITE_COLOR
-        }
+//        var categoryViewColor = UIColor.white
+//        switch(categoryColor) {
+//        case "RED":
+//            categoryViewColor = RED_COLOR
+//        case "GREEN":
+//            categoryViewColor = GREEN_COLOR
+//        case "YELLOW":
+//            categoryViewColor = YELLOW_COLOR
+//        case "BLUE":
+//            categoryViewColor = BLUE_COLOR
+//        case "MAGENTA":
+//            categoryViewColor = MAGENTA_COLOR
+//        case "WHITE":
+//            categoryViewColor = WHITE_COLOR
+//        default:
+//            categoryViewColor = WHITE_COLOR
+//        }
+        let categoryViewColor = UIColor(hex: categoryColor)
         
         let x = product.category_x
         let y = -product.category_y
@@ -287,23 +288,24 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private func makeContentsUI(product: ProductInfo) -> (UIColor, String) {
         let categoryColor = product.category_color
         let categoryNumber = String(product.category_number)
-        var categoryViewColor = UIColor.white
-        switch(categoryColor) {
-        case "RED":
-            categoryViewColor = RED_COLOR
-        case "GREEN":
-            categoryViewColor = GREEN_COLOR
-        case "YELLOW":
-            categoryViewColor = YELLOW_COLOR
-        case "BLUE":
-            categoryViewColor = BLUE_COLOR
-        case "MAGENTA":
-            categoryViewColor = MAGENTA_COLOR
-        case "WHITE":
-            categoryViewColor = WHITE_COLOR
-        default:
-            categoryViewColor = WHITE_COLOR
-        }
+//        var categoryViewColor = UIColor.white
+//        switch(categoryColor) {
+//        case "RED":
+//            categoryViewColor = RED_COLOR
+//        case "GREEN":
+//            categoryViewColor = GREEN_COLOR
+//        case "YELLOW":
+//            categoryViewColor = YELLOW_COLOR
+//        case "BLUE":
+//            categoryViewColor = BLUE_COLOR
+//        case "MAGENTA":
+//            categoryViewColor = MAGENTA_COLOR
+//        case "WHITE":
+//            categoryViewColor = WHITE_COLOR
+//        default:
+//            categoryViewColor = WHITE_COLOR
+//        }
+        let categoryViewColor = UIColor(hex: categoryColor)
         
         return (categoryViewColor, categoryNumber)
     }
@@ -652,25 +654,55 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         // Off Cart Check
         for product in self.offCartProducts {
             if product.category_number == categoryInfo.number {
-                if self.personalProfile.contains(product.product_profile) {
-                    if let ledColor = self.profileColorDict[product.product_profile] {
-                        if let preTime = eslDict[product.id] {
-                            if currentTime - preTime > REQ_LED_TIME {
-                                let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
-                                eslList.append(esl)
-                                eslDict[product.id] = currentTime
-                            }
-                        } else {
-                            let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
-                            eslList.append(esl)
-                            eslDict[product.id] = currentTime
-                        }
+                let ledColor = checkPersonalOption(productProfile: product.product_profile)
+                if let preTime = eslDict[product.id] {
+                    if currentTime - preTime > REQ_LED_TIME {
+                        let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
+                        eslList.append(esl)
+                        eslDict[product.id] = currentTime
                     }
+                } else {
+                    let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
+                    eslList.append(esl)
+                    eslDict[product.id] = currentTime
                 }
+                
+//                if self.personalProfile.contains(product.product_profile) {
+//                    if let ledColor = self.profileColorDict[product.product_profile] {
+//                        if let preTime = eslDict[product.id] {
+//                            if currentTime - preTime > REQ_LED_TIME {
+//                                let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
+//                                eslList.append(esl)
+//                                eslDict[product.id] = currentTime
+//                            }
+//                        } else {
+//                            let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
+//                            eslList.append(esl)
+//                            eslDict[product.id] = currentTime
+//                        }
+//                    }
+//                }
             }
         }
         
         return (eslList, productsForContents)
+    }
+    
+    private func checkPersonalOption(productProfile: [String]) -> String {
+        let overlappingValues: [String] = self.personalProfile.filter { productProfile.contains($0) }
+        if overlappingValues.isEmpty {
+            return ""
+        }
+        if overlappingValues.count > 1 {
+            return "CYAN"
+        } else {
+            let overlappingValue = overlappingValues[0]
+            if let ledColor = self.profileColorDict[overlappingValue] {
+                return ledColor
+            } else {
+                return defaultColor
+            }
+        }
     }
     
     private func checkMatchingProductForContents(categoryInfo: CategoryInfo, user: [Double]) -> [ProductInfo] {
