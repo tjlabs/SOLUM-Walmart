@@ -91,7 +91,6 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     // Olympus Service
     let sector_id: Int = 2
     let user_id: String = "SOLUM-Test"
-    let region: String = "Korea"
     let mode: String = "pdr"
     let key_header = "S3_7F"
     
@@ -187,7 +186,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         // MapView
         mapView.delegate = self
         mapView.setIsPpHidden(flag: true)
-        OlympusMapManager.shared.loadMapForScale(region: "Korea", sector_id: sector_id, mapView: mapView)
+        OlympusMapManager.shared.loadMapForScale(region: OLYMPUS_REGION, sector_id: sector_id, mapView: mapView)
         setupMapView()
     }
 
@@ -217,6 +216,8 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private func plotOnCartProducts(products: [ProductInfo]) {
         categoryDrawed = []
         let mapAndPpScaleValues = mapView.mapAndPpScaleValues
+        print("(FindProductView) : plotProduct // mapAndPpScaleValues = \(mapAndPpScaleValues)")
+        print("(FindProductView) : plotProduct // products = \(products)")
         for item in products {
             let categoryNumber = item.category_number
             if !categoryDrawed.contains(categoryNumber) {

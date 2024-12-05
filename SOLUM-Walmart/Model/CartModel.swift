@@ -1,6 +1,7 @@
 import Foundation
 
-let SHOP_PRODUCT_URL = "https://ap-northeast-2.user.warp.tjlabs.dev/2024-12-03/category?sector_id="
+//let SHOP_PRODUCT_URL = "https://ap-northeast-2.user.warp.tjlabs.dev/2024-12-03/category?sector_id="
+let SHOP_PRODUCT_URL = "https://us-east-1.user.warp.tjlabs.dev/2024-12-03/category?sector_id="
 
 struct ShopOutput: Codable, Equatable, Hashable {
     var category_list: [ShopCategoryList]

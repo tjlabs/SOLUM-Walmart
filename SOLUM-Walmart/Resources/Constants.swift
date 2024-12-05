@@ -4,6 +4,8 @@ let SOLUM_COLOR_HEX = "#0B263E"
 let SOLUM_COLOR = UIColor(hex: SOLUM_COLOR_HEX)
 let OPERATING_SYSTEM = "iOS"
 
+var USER_REGION = "Korea"
+var OLYMPUS_REGION = "US-East"
 
 let RED_COLOR = UIColor(hex: "#E27171")
 let GREEN_COLOR = UIColor(hex: "#79DDB5")

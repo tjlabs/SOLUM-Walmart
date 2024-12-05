@@ -10,7 +10,7 @@ target 'SOLUM-Walmart' do
   pod 'Then' 
   pod 'RxSwift', '~> 6.5.0'
   pod 'RxCocoa', '~> 6.5.0'
-  pod 'OlympusSDK', '0.2.14'
+  pod 'OlympusSDK', '0.2.16'
 
   target 'SOLUM-WalmartTests' do
     inherit! :search_paths
