@@ -186,6 +186,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         // MapView
         mapView.delegate = self
         mapView.setIsPpHidden(flag: true)
+        mapView.setBuildingLevelIsHidden(flag: true)
         OlympusMapManager.shared.loadMapForScale(region: OLYMPUS_REGION, sector_id: sector_id, mapView: mapView)
         setupMapView()
     }
@@ -214,19 +215,24 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     }
     
     private func plotOnCartProducts(products: [ProductInfo]) {
+        mapView.setUnitTags(num: products.count)
+        
         categoryDrawed = []
         let mapAndPpScaleValues = mapView.mapAndPpScaleValues
         print("(FindProductView) : plotProduct // mapAndPpScaleValues = \(mapAndPpScaleValues)")
         print("(FindProductView) : plotProduct // products = \(products)")
+        
+        var productViews = [UIView]()
         for item in products {
             let categoryNumber = item.category_number
             if !categoryDrawed.contains(categoryNumber) {
                 let productView = makeOnCartUIView(product: item, scales: mapAndPpScaleValues)
-                mapView.plotUnitUsingCoord(unitView: productView)
+                productViews.append(productView)
                 categoryDrawed.append(categoryNumber)
                 let categoryInfo = CategoryInfo(name: item.category_name, number: item.category_number, color: item.category_color, x: item.category_x, y: item.category_y, range: item.category_range)
                 categoryList.insert(categoryInfo)
             }
+            mapView.plotUnitUsingCoord(unitViews: productViews)
         }
     }
     
@@ -584,7 +590,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         
         let uniqueId = makeUniqueId(uuid: self.user_id)
         serviceManager.addObserver(self)
-        serviceManager.startService(user_id: uniqueId, region: region, sector_id: sector_id, service: "FLT", mode: mode, completion: { [self] isStart, returnedString in
+        serviceManager.startService(user_id: uniqueId, region: OLYMPUS_REGION, sector_id: sector_id, service: "FLT", mode: mode, completion: { [self] isStart, returnedString in
             if (isStart) {
                 self.startTimer()
             } else {

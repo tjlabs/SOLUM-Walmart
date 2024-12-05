@@ -175,6 +175,8 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
         headerView.onCartImageViewTapped = {
             if self.isDoneTapped {
                 self.onCartTappedInPersonalOptionView?()
+            } else {
+                self.showDialogView()
             }
         }
         
@@ -217,6 +219,22 @@ class PersonalOptionView: UIView, UICollectionViewDataSource, UICollectionViewDe
         }
         
         onDoneImageViewTapped?()
+    }
+    
+    private func showDialogView() {
+        print("(PersonalOptionView) Check-out Button tapped")
+        
+        let dialogView = DialogView()
+        dialogView.onConfirm = { [weak self] in
+            print("Confirmed checkout")
+        }
+        
+        if let parentView = self.superview {
+            parentView.addSubview(dialogView)
+            dialogView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        }
     }
     
     private func getSelectedLabels() -> [String] {
