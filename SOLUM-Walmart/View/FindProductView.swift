@@ -89,7 +89,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     var preIndex: Int = -1
     
     // Olympus Service
-    let sector_id: Int = 2
+    let sector_id: Int = 3
     let user_id: String = "SOLUM-Test"
     let mode: String = "pdr"
     let key_header = "S3_7F"
@@ -480,7 +480,10 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         
         coordSettingView.onSave = {
             let cachedCoords = CoordSettingView.loadCoordFromCache()
-            print("Saved Coords: x=\(cachedCoords.x), y=\(cachedCoords.y), heading=\(cachedCoords.heading)")
+            print("Saved Coords: x= \(cachedCoords.x), y= \(cachedCoords.y), heading= \(cachedCoords.heading)")
+            
+            let cachedStepLength = CoordSettingView.loadStepInfoFromCache()
+            print("Saved Step: isFixed= \(cachedStepLength.isUseFixedStep), length= \(cachedStepLength.stepLength)")
         }
     }
     
@@ -582,13 +585,16 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     
     private func startService() {
         let cachedCoords = CoordSettingView.loadCoordFromCache()
+        let cachedStep = CoordSettingView.loadStepInfoFromCache()
 
         let startX = Int(cachedCoords.x)
         let startY = Int(cachedCoords.y)
         let startHeading = cachedCoords.heading
         
+        serviceManager.setUseFixedStep(flag: cachedStep.isUseFixedStep)
+        serviceManager.setFixedStepLength(value: cachedStep.stepLength)
         serviceManager.setDeadReckoningMode(flag: true, buildingName: "S3", levelName: "7F", x: startX, y: startY, heading: startHeading)
-//        serviceManager.setDeadReckoningMode(flag: true, buildingName: "S3", levelName: "7F", x: 16, y: 13, heading: 180)
+//        serviceManager.setDeadReckoningMode(flag: true, buildingName: "Solum", levelName: "0F", x: startX, y: startY, heading: startHeading)
         
         let uniqueId = makeUniqueId(uuid: self.user_id)
         serviceManager.addObserver(self)

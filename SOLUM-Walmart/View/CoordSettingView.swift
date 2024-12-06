@@ -18,11 +18,14 @@ class CoordSettingView: UIView {
     private static var savedStartX: Double = 0
     private static var savedStartY: Double = 0
     private static var savedHeading: Double = 0
+    private static var savedUseFixedStep: Bool = false
+    private static var savedStepLength: Double = 0.55
     
     var onSave: (() -> Void)?
     var onCancel: (() -> Void)?
     
     private static let coordCacheKey = "CoordCache"
+    private static let stepCacheKey = "StepCache"
     
     private lazy var darkView: UIView = {
         let view = UIView()
@@ -39,6 +42,73 @@ class CoordSettingView: UIView {
         view.layer.cornerRadius = 10
         view.layer.masksToBounds = true
         return view
+    }()
+    
+    private var stepView: UIView = {
+        let view = UIView()
+        view.alpha = 0.8
+        view.layer.cornerRadius = 10
+        view.layer.masksToBounds = true
+        return view
+    }()
+    
+    private let stepStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 10
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    private let fixedStepSetStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.distribution = .fillEqually
+        stackView.spacing = 2
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    private let fixedStepSetLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Fix Step Length"
+        label.font = UIFont.pretendardBold(size: 18)
+        label.textColor = .black
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private lazy var fixedStepSetSwitch: UISwitch = {
+        let toggleSwitch = UISwitch()
+        toggleSwitch.isOn = false
+        toggleSwitch.addTarget(self, action: #selector(fixedStepSwitchToggled(_:)), for: .valueChanged)
+        return toggleSwitch
+    }()
+
+    
+    private let fixedStepLengthStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.distribution = .fillEqually
+        stackView.spacing = 2
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    private let fixedStepLengthLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Step Length"
+        label.font = UIFont.pretendardBold(size: 18)
+        label.textColor = .black
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private lazy var fixedStepLengthTextField: UITextField = {
+        let textField = createStyledTextField(placeholder: "Value")
+        textField.isEnabled = false
+        return textField
     }()
     
     private lazy var buttonStackView: UIStackView = {
@@ -111,7 +181,7 @@ class CoordSettingView: UIView {
         contentView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.equalToSuperview().inset(30)
-            make.height.equalTo(100)
+            make.height.equalTo(160)
         }
         
         contentView.addSubview(buttonStackView)
@@ -120,6 +190,29 @@ class CoordSettingView: UIView {
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(30)
         }
+        contentView.addSubview(stepView)
+        stepView.snp.makeConstraints { make in
+            make.bottom.equalTo(buttonStackView.snp.top).inset(-10)
+            make.leading.trailing.equalToSuperview().inset(10)
+            make.height.equalTo(60)
+        }
+        stepView.addSubview(stepStackView)
+        stepStackView.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview()
+        }
+        
+        fixedStepSetStackView.addArrangedSubview(fixedStepSetLabel)
+        fixedStepSetStackView.addArrangedSubview(fixedStepSetSwitch)
+        fixedStepSetSwitch.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(5)
+        }
+        stepStackView.addArrangedSubview(fixedStepSetStackView)
+        
+        fixedStepLengthStackView.addArrangedSubview(fixedStepLengthLabel)
+        fixedStepLengthStackView.addArrangedSubview(fixedStepLengthTextField)
+        stepStackView.addArrangedSubview(fixedStepLengthStackView)
+        
+        
         buttonStackView.addArrangedSubview(saveButton)
         buttonStackView.addArrangedSubview(cancelButton)
         
@@ -128,7 +221,7 @@ class CoordSettingView: UIView {
         coordInfoStackView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(10)
             make.top.equalToSuperview().inset(10)
-            make.bottom.equalTo(buttonStackView.snp.top).inset(-10)
+            make.bottom.equalTo(stepView.snp.top).inset(-10)
         }
         
         coordInfoStackView.addArrangedSubview(xTextField)
@@ -141,21 +234,12 @@ class CoordSettingView: UIView {
         xTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
         yTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
         headingTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+        fixedStepLengthTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
     }
     
-//    @objc private func textFieldEditingChanged(_ textField: UITextField) {
-//        if textField == xTextField {
-//            CoordSettingView.savedStartX = Double(textField.text ?? "") ?? 0
-//        } else if textField == yTextField {
-//            CoordSettingView.savedStartY = Double(textField.text ?? "") ?? 0
-//        } else if textField == headingTextField {
-//            CoordSettingView.savedHeading = Double(textField.text ?? "") ?? 0
-//        }
-//    }
     
     @objc private func textFieldEditingChanged(_ textField: UITextField) {
         debounceTimer?.invalidate()
-
         debounceTimer = Timer.scheduledTimer(withTimeInterval: debounceInterval, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             if textField == self.xTextField {
@@ -164,6 +248,8 @@ class CoordSettingView: UIView {
                 CoordSettingView.savedStartY = Double(textField.text ?? "") ?? 0
             } else if textField == self.headingTextField {
                 CoordSettingView.savedHeading = Double(textField.text ?? "") ?? 0
+            } else if textField == self.fixedStepLengthTextField {
+                CoordSettingView.savedStepLength = Double(textField.text ?? "") ?? 0
             }
         }
     }
@@ -173,6 +259,7 @@ class CoordSettingView: UIView {
         xTextField.text = String(CoordSettingView.savedStartX)
         yTextField.text = String(CoordSettingView.savedStartY)
         headingTextField.text = String(CoordSettingView.savedHeading)
+        
     }
     
     private func applyCachedValues() {
@@ -180,6 +267,11 @@ class CoordSettingView: UIView {
         xTextField.text = String(cachedValues.x)
         yTextField.text = String(cachedValues.y)
         headingTextField.text = String(cachedValues.heading)
+        
+        let cachedStepValues = CoordSettingView.loadStepInfoFromCache()
+        fixedStepSetSwitch.isOn = cachedStepValues.isUseFixedStep
+        fixedStepLengthTextField.text = String(cachedStepValues.stepLength)
+        fixedStepLengthTextField.isEnabled = cachedStepValues.isUseFixedStep
     }
     
     @objc private func dismissDialog() {
@@ -197,7 +289,26 @@ class CoordSettingView: UIView {
         let y = Double(yTextField.text ?? "") ?? 0
         let heading = Double(headingTextField.text ?? "") ?? 0
         CoordSettingView.saveCoordToCache(x: x, y: y, heading: heading)
+        
+        let isUseFixedStep = fixedStepSetSwitch.isOn
+        let stepLength = Double(fixedStepLengthTextField.text ?? "") ?? 0
+        CoordSettingView.saveStepInfoToCache(isUseFixedStep: isUseFixedStep, stepLength: stepLength)
+        
         onSave?()
+    }
+    
+    static func saveStepInfoToCache(isUseFixedStep: Bool, stepLength: Double) {
+        let stepInfo = ["isUseFixedStep": isUseFixedStep, "stepLength": stepLength] as [String : Any]
+        UserDefaults.standard.set(stepInfo, forKey: stepCacheKey)
+    }
+
+    static func loadStepInfoFromCache() -> (isUseFixedStep: Bool, stepLength: Double) {
+        guard let stepInfo = UserDefaults.standard.dictionary(forKey: stepCacheKey) as? [String: Any],
+              let isUseFixedStep = stepInfo["isUseFixedStep"] as? Bool,
+              let stepLength = stepInfo["stepLength"] as? Double else {
+            return (false, 0)
+        }
+        return (isUseFixedStep, stepLength)
     }
     
     static func saveCoordToCache(x: Double, y: Double, heading: Double) {
@@ -224,5 +335,12 @@ class CoordSettingView: UIView {
         textField.addLeftPadding()
         
         return textField
+    }
+    
+    @objc private func fixedStepSwitchToggled(_ sender: UISwitch) {
+        fixedStepLengthTextField.isEnabled = sender.isOn
+        if !sender.isOn {
+            fixedStepLengthTextField.isEnabled = false
+        }
     }
 }

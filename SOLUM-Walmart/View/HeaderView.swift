@@ -8,7 +8,7 @@ import SnapKit
 import Then
 
 class HeaderView: UIView {
-    
+    public static var cartItemCounts: Int = 0
     private var title: String?
     
     var onBackImageViewTapped: (() -> Void)?
@@ -46,7 +46,7 @@ class HeaderView: UIView {
     
     private let cartCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "4"
+        label.text = String(HeaderView.cartItemCounts)
         label.textColor = .white
         label.font = UIFont.pretendardBold(size: 12)
         label.textAlignment = .center
@@ -85,6 +85,7 @@ class HeaderView: UIView {
         self.title = title
         setupLayout(title: title)
         setupActions()
+        updateCartCountLabel()
     }
     
     required init?(coder: NSCoder) {
@@ -175,7 +176,16 @@ class HeaderView: UIView {
         let tapMenu = UITapGestureRecognizer(target: self, action: #selector(menuImageViewTapped))
         menuImageView.addGestureRecognizer(tapMenu)
     }
-        
+    
+    public func updateCartCountLabel() {
+        if HeaderView.cartItemCounts > 0 {
+            cartCountView.isHidden = false
+            cartCountLabel.text = "\(HeaderView.cartItemCounts)"
+        } else {
+            cartCountView.isHidden = true
+        }
+    }
+    
     @objc private func backImageViewTapped() {
         onBackImageViewTapped?()
     }

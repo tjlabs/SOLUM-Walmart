@@ -30,17 +30,17 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         $0.textColor = .white
     }
     
-    private let selectedItemLabel = UILabel().then {
+    private var selectedItemLabel = UILabel().then {
         $0.font = UIFont.pretendardRegular(size: 16)
         $0.textAlignment = .left
-        $0.text = "Selected 4 items"
+        $0.text = "Selected 0 items"
         $0.textColor = .white
     }
     
-    private let selectedItemSmallLabel = UILabel().then {
+    private var selectedItemSmallLabel = UILabel().then {
         $0.font = UIFont.pretendardRegular(size: 12)
         $0.textAlignment = .left
-        $0.text = "Selected 4 items"
+        $0.text = "Selected 0 items"
         $0.textColor = .white
     }
     
@@ -114,7 +114,7 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         addSubview(selectedItemLabel)
         selectedItemLabel.snp.makeConstraints { make in
             make.height.equalTo(40)
-            make.width.equalTo(120)
+            make.width.equalTo(200)
             make.leading.equalToSuperview().inset(20)
             make.top.equalTo(headerView.snp.bottom).offset(0)
         }
@@ -137,7 +137,7 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         selectedItemSmallLabel.snp.makeConstraints { make in
             make.bottom.equalTo(subtotalLabel.snp.top).offset(-10)
             make.left.equalToSuperview().inset(20)
-            make.width.equalTo(150)
+            make.width.equalTo(200)
         }
         
         addSubview(priceLabel)
@@ -235,6 +235,11 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
                 }
             }
         }
+        let cartItemCounts = self.onCartProducts.count
+        HeaderView.cartItemCounts = cartItemCounts
+        headerView.updateCartCountLabel()
+        selectedItemLabel.text = "Selected \(cartItemCounts) items"
+        selectedItemSmallLabel.text = "Selected \(cartItemCounts) items"
         configureCartView()
     }
     

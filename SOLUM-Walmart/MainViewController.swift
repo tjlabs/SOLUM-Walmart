@@ -13,7 +13,7 @@ class MainViewController: UIViewController {
     private let viewModel = CartViewModel()
     private var currentSubview: UIView?
     
-    let sector_id: Int = 2
+    let sector_id: Int = 3
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
