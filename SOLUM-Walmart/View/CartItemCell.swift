@@ -191,19 +191,56 @@ class CartItemCell: UICollectionViewCell {
         }
     }
     
+//    func configure(data: ProductInfo) {
+//        if let url = URL(string: data.product_url) {
+//            productImageView.kf.setImage(with: url, placeholder: UIImage(named: "placeholder"))
+//        }
+//        
+//        if let checkboxImage = UIImage(named: "ic_checkbox_\(data.category_color)") {
+//            checkboxImageView.image = checkboxImage
+//        }
+//        
+////        titleLabel.text = ""
+//        nameLabel.text = data.product_name
+////        nameLabel.text = "Triscuit Thin Crisps Original Whole Grain Wheat Cracekrs, Vegan Crackers, 7.1 oz"
+//        quantityLabel.text = "1"
+//        priceLabel.text = "$\(data.product_price) ea"
+//    }
+    
     func configure(data: ProductInfo) {
-        if let url = URL(string: data.product_url) {
-            productImageView.kf.setImage(with: url, placeholder: UIImage(named: "placeholder"))
-        }
+        let placeholderImage = UIImage(named: "placeholder")
         
+        if let url = URL(string: data.product_url) {
+            productImageView.kf.setImage(with: url, placeholder: placeholderImage, options: nil, completionHandler: { result in
+                switch result {
+                case .success(let value):
+                    print("Image loaded: \(value.source.url?.absoluteString ?? "")")
+                case .failure(let error):
+                    print("Image load failed: \(error.localizedDescription)")
+                }
+            })
+        } else {
+            productImageView.image = placeholderImage
+        }
+
         if let checkboxImage = UIImage(named: "ic_checkbox_\(data.category_color)") {
             checkboxImageView.image = checkboxImage
         }
         
-//        titleLabel.text = ""
         nameLabel.text = data.product_name
-//        nameLabel.text = "Triscuit Thin Crisps Original Whole Grain Wheat Cracekrs, Vegan Crackers, 7.1 oz"
         quantityLabel.text = "1"
         priceLabel.text = "$\(data.product_price) ea"
+    }
+
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        productImageView.image = UIImage(named: "placeholder")
+        checkboxImageView.image = nil
+        titleLabel.text = nil
+        nameLabel.text = nil
+        quantityLabel.text = nil
+        priceLabel.text = nil
     }
 }

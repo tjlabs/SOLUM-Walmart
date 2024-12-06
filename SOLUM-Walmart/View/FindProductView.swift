@@ -28,7 +28,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
                         print("(FindProductView) : ESL Color = \(item.led_color)")
                     }
                 }
-                activateValidESLs(validESLs: validESLs.0)
+//                activateValidESLs(validESLs: validESLs.0)
                 
                 
                 let validProducts = checkMatchingProductForContents(categoryInfo: nearbyCategory, user: userCoord)
@@ -37,22 +37,6 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
                     let contentsUI = makeContentsUI(product: product)
                     showNearbyProduct(categoryUI: contentsUI, title: product.product_name, contents: contents)
                 }
-                
-//                if !validESLs.1.isEmpty {
-//                    print("(FindProductView) : Off Cart ESL")
-//                    for item in validESLs.1 {
-//                        print("(FindProductView) : ESL ID = \(item.id)")
-//                        print("(FindProductView) : Category Color = \(item.category_color)")
-//                    }
-//                    print("(FindProductView) : -----------------------------)")
-//                }
-//                
-//                
-//                for product in validESLs.1 {
-//                    let contents = makeProductContents(user: userCoord, product: product)
-//                    let contentsUI = makeContentsUI(product: product)
-//                    showNearbyProduct(categoryUI: contentsUI, title: product.product_name, contents: contents)
-//                }
             }
         }
         preIndex = currentIndex
@@ -593,8 +577,8 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         
         serviceManager.setUseFixedStep(flag: cachedStep.isUseFixedStep)
         serviceManager.setFixedStepLength(value: cachedStep.stepLength)
-        serviceManager.setDeadReckoningMode(flag: true, buildingName: "S3", levelName: "7F", x: startX, y: startY, heading: startHeading)
-//        serviceManager.setDeadReckoningMode(flag: true, buildingName: "Solum", levelName: "0F", x: startX, y: startY, heading: startHeading)
+//        serviceManager.setDeadReckoningMode(flag: true, buildingName: "S3", levelName: "7F", x: startX, y: startY, heading: startHeading)
+        serviceManager.setDeadReckoningMode(flag: true, buildingName: "Solum", levelName: "0F", x: startX, y: startY, heading: startHeading)
         
         let uniqueId = makeUniqueId(uuid: self.user_id)
         serviceManager.addObserver(self)

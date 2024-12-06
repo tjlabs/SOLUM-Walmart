@@ -26,6 +26,7 @@ class CoordSettingView: UIView {
     
     private static let coordCacheKey = "CoordCache"
     private static let stepCacheKey = "StepCache"
+    static let defaultXYH: [Double] = [5, 5, 90]
     
     private lazy var darkView: UIView = {
         let view = UIView()
@@ -318,9 +319,9 @@ class CoordSettingView: UIView {
         
     static func loadCoordFromCache() -> (x: Double, y: Double, heading: Double) {
         guard let cache = UserDefaults.standard.dictionary(forKey: coordCacheKey) as? [String: Double] else {
-            return (x: 0, y: 0, heading: 0)
+            return (x: defaultXYH[0], y: defaultXYH[1], heading: defaultXYH[2])
         }
-        return (x: cache["x"] ?? 0, y: cache["y"] ?? 0, heading: cache["heading"] ?? 0)
+        return (x: cache["x"] ?? defaultXYH[0], y: cache["y"] ?? defaultXYH[1], heading: cache["heading"] ?? defaultXYH[2])
     }
     
     private func createStyledTextField(placeholder: String) -> UITextField {
