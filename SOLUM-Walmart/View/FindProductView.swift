@@ -28,7 +28,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
                         print("(FindProductView) : ESL Color = \(item.led_color)")
                     }
                 }
-//                activateValidESLs(validESLs: validESLs.0)
+                activateValidESLs(validESLs: validESLs.0)
                 
                 
                 let validProducts = checkMatchingProductForContents(categoryInfo: nearbyCategory, user: userCoord)

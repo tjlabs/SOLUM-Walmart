@@ -13,6 +13,7 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
     
     var onCartProducts = [ProductInfo]()
     var offCartProducts = [ProductInfo]()
+    var cellWidthHeight: [CGFloat] = [0, 0]
     
     // Done Button
 //    var onFindProductImageViewTapped: (([Esl]) -> Void)?
@@ -77,8 +78,7 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(CartItemCell.self, forCellWithReuseIdentifier: "CartItemCell")
-
+        collectionView.register(CartItemCell.self, forCellWithReuseIdentifier: CartItemCell.reuseIdentifier)
         
         return collectionView
     }()
@@ -88,6 +88,7 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         setupLayout()
         setupActions()
         bindActions()
+        updateInfo()
     }
 
     required init?(coder: NSCoder) {
@@ -179,9 +180,9 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
 //        headerView.onSearchImageViewTapped = {[weak self] in
 //            self?.onFindProductImageViewTapped?()
 //        }
+        
         headerView.onSearchImageViewTapped = { [weak self] in
             guard let self = self else { return }
-//            self.onFindProductImageViewTapped?(self.cartProducts)
             self.onFindProductImageViewTapped?(self.onCartProducts, self.offCartProducts)
         }
     }
@@ -202,135 +203,79 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
         onFindProductImageViewTapped?(onCartProducts, offCartProducts)
     }
     
-//    func updateAllProducts(outputProducts: ShopOutput) {
-//        for category_list in outputProducts.category_list {
-//            let building_name = category_list.building_name
-//            let level_name = category_list.level_name
-//            let categories = category_list.categories
-//            for category in categories {
-//                let categoryName = category.name
-//                let categoryNumber = category.number
-//                let categoryColor = category.color
-//                let categoryX = category.x
-//                let categoryY = category.y
-//                let categoryRange = category.range
-//                
-//                let product_list = category.products
-//                for product in product_list {
-//                    let productEslId = product.esl_id
-//                    let productEslDuration = product.esl_duration
-//                    
-//                    let productName = product.name
-//                    let productPrice = product.price
-//                    let productURL = product.image_url
-//                    let productProfiles = product.profiles
-//                    let onCart = product.on_cart
-//                    
-//                    let productInfo = ProductInfo(id: productEslId, led_duration: productEslDuration,
-//                                                  category_name: categoryName, category_number: categoryNumber, category_color: categoryColor, category_x: categoryX, category_y: categoryY, category_range: categoryRange,
-//                                                  product_name: productName, product_price: productPrice, product_url: productURL, product_profile: productProfiles)
-//                    if onCart {
-//                        // 카트에 담긴 제품
-//                        self.onCartProducts.append(productInfo)
-//                    } else {
-//                        // 카트에 안담긴 제품
-//                        self.offCartProducts.append(productInfo)
-//                    }
-//                }
-//            }
-//        }
-//        let cartItemCounts = self.onCartProducts.count
-//        HeaderView.cartItemCounts = cartItemCounts
-//        headerView.updateCartCountLabel()
-//        selectedItemLabel.text = "Selected \(cartItemCounts) items"
-//        selectedItemSmallLabel.text = "Selected \(cartItemCounts) items"
-//        configureCartView()
-//    }
-    
     func updateAllProducts(outputProducts: ShopOutput) {
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self else { return }
-            
-            self.onCartProducts.removeAll()
-            
-            for category_list in outputProducts.category_list {
-                let building_name = category_list.building_name
-                let level_name = category_list.level_name
-                let categories = category_list.categories
-                for category in categories {
-                    let categoryName = category.name
-                    let categoryNumber = category.number
-                    let categoryColor = category.color
-                    let categoryX = category.x
-                    let categoryY = category.y
-                    let categoryRange = category.range
+        for category_list in outputProducts.category_list {
+            let building_name = category_list.building_name
+            let level_name = category_list.level_name
+            let categories = category_list.categories
+            for category in categories {
+                let categoryName = category.name
+                let categoryNumber = category.number
+                let categoryColor = category.color
+                let categoryX = category.x
+                let categoryY = category.y
+                let categoryRange = category.range
+                
+                let product_list = category.products
+                for product in product_list {
+                    let productEslId = product.esl_id
+                    let productEslDuration = product.esl_duration
                     
-                    let product_list = category.products
-                    for product in product_list {
-                        let productEslId = product.esl_id
-                        let productEslDuration = product.esl_duration
-                        
-                        let productName = product.name
-                        let productPrice = product.price
-                        let productURL = product.image_url
-                        let productProfiles = product.profiles
-                        let onCart = product.on_cart
-                        
-                        let productInfo = ProductInfo(id: productEslId, led_duration: productEslDuration,
-                                                      category_name: categoryName, category_number: categoryNumber, category_color: categoryColor, category_x: categoryX, category_y: categoryY, category_range: categoryRange,
-                                                      product_name: productName, product_price: productPrice, product_url: productURL, product_profile: productProfiles)
-                        if onCart {
-                            // 카트에 담긴 제품
-                            self.onCartProducts.append(productInfo)
-                        } else {
-                            // 카트에 안담긴 제품
-                            self.offCartProducts.append(productInfo)
-                        }
+                    let productName = product.name
+                    let productPrice = product.price
+                    let productURL = product.image_url
+                    let productProfiles = product.profiles
+                    let onCart = product.on_cart
+                    
+                    let productInfo = ProductInfo(id: productEslId, led_duration: productEslDuration,
+                                                  category_name: categoryName, category_number: categoryNumber, category_color: categoryColor, category_x: categoryX, category_y: categoryY, category_range: categoryRange,
+                                                  product_name: productName, product_price: productPrice, product_url: productURL, product_profile: productProfiles)
+                    if onCart {
+                        // 카트에 담긴 제품
+                        self.onCartProducts.append(productInfo)
+                    } else {
+                        // 카트에 안담긴 제품
+                        self.offCartProducts.append(productInfo)
                     }
                 }
-            }
-            
-            DispatchQueue.main.async { [self] in
-                self.collectionView.reloadData()
-                let cartItemCounts = self.onCartProducts.count
-                HeaderView.cartItemCounts = cartItemCounts
-                self.headerView.updateCartCountLabel()
-                self.selectedItemLabel.text = "Selected \(cartItemCounts) items"
-                self.selectedItemSmallLabel.text = "Selected \(cartItemCounts) items"
-                self.configureCartView()
             }
         }
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let visibleIndices = collectionView.indexPathsForVisibleItems
+//        print("Visible cells: \(visibleIndices.map { $0.row })")
+    }
+
+    
     public func configureCartView() {
-        // New
         var priceSum: Double = 0
         for item in onCartProducts {
             priceSum += item.product_price
         }
         priceLabel.text = String(format: "$ %.2f", priceSum)
     }
-}
-
-extension CartView {
+    
+    private func updateInfo() {
+        DispatchQueue.main.async { [self] in
+            let cartItemCounts = self.onCartProducts.count
+            HeaderView.cartItemCounts = cartItemCounts
+            self.headerView.updateCartCountLabel()
+            self.selectedItemLabel.text = "Selected \(cartItemCounts) items"
+            self.selectedItemSmallLabel.text = "Selected \(cartItemCounts) items"
+            self.configureCartView()
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return cartProducts.count
         return onCartProducts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CartItemCell", for: indexPath) as! CartItemCell
-//        let product = cartProducts[indexPath.row]
-//        let product = onCartProducts[indexPath.row]
-//        cell.configure(data: product)
-        
-        if indexPath.row < onCartProducts.count {
-            let product = onCartProducts[indexPath.row]
-            print("Configuring cell at index: \(indexPath.row), Product: \(product.product_name)")
-            cell.configure(data: product)
-        } else {
-            print("No product found for index: \(indexPath.row)")
-        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CartItemCell.reuseIdentifier, for: indexPath) as! CartItemCell
+        let product = onCartProducts[indexPath.row]
+//        print("index = \(indexPath.row) // product = \(product) // counts = \(onCartProducts.count)")
+        cell.configure(data: product)
         
         return cell
     }
@@ -338,7 +283,8 @@ extension CartView {
     // MARK: - UICollectionViewDelegateFlowLayout
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width
-        let height = collectionView.frame.height/4
+        let height: CGFloat = 121
+        
         return CGSize(width: width, height: height)
     }
 }
