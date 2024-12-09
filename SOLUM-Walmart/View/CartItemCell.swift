@@ -198,7 +198,7 @@ class CartItemCell: UICollectionViewCell {
     }
     
     func configure(data: ProductInfo) {
-        let placeholderImage = UIImage(named: "placeholder")
+        let placeholderImage = UIImage(named: "noImage_placeholder")
         
         if let url = URL(string: data.product_url) {
             productImageView.kf.setImage(with: url, placeholder: placeholderImage, options: nil, completionHandler: { result in
@@ -226,7 +226,7 @@ class CartItemCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        productImageView.image = UIImage(named: "placeholder")
+        productImageView.image = UIImage(named: "noImage_placeholder")
         checkboxImageView.image = nil
         titleLabel.text = nil
         nameLabel.text = nil

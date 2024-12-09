@@ -19,13 +19,16 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             let userCoord = [result.x, result.y, result.absolute_heading]
             let nearbyCategories = checkNearbyCategories(user: userCoord)
             
+            if !nearbyCategories.isEmpty {
+//                print("(FindProductView) : Matching Category ---------------")
+            }
             for nearbyCategory in nearbyCategories {
+//                print("(FindProductView) : Matching Category \(nearbyCategory.number)")
                 let validESLs = checkMatchingProducts(categoryInfo: nearbyCategory)
                 if !validESLs.0.isEmpty {
-                    print("(FindProductView) : ESL for LED")
+//                    print("(FindProductView) : ESL for LED")
                     for item in validESLs.0 {
-                        print("(FindProductView) : ESL ID = \(item.id)")
-                        print("(FindProductView) : ESL Color = \(item.led_color)")
+//                        print("(FindProductView) : ESL ID = \(item.id) // ESL Color = \(item.led_color)")
                     }
                 }
                 activateValidESLs(validESLs: validESLs.0)
@@ -49,8 +52,9 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private var categoryDrawed = [Int]()
     private var categoryList = Set<CategoryInfo>()
     private var personalProfile = [String]()
-    private let defaultColor = "WHITE"
-    private let profileColorDict: [String: String] = ["Vegan":"GREEN", "Gluten Free":"RED", "Lactose Free":"BLUE", "Sugar Free":"MAGENTA"]
+    private let defaultColor = "BLUE"
+    private let overlappingColor = "CYAN"
+    private let profileColorDict: [String: String] = ["Vegan":"GREEN", "Gluten Free":"RED", "Lactose Free":"YELLOW", "Sugar Free":"MAGENTA"]
     var eslDict = [String: Double]()
     var productDict = [String: Double]()
     let REQ_DISTANCE: Double = 2.0
@@ -162,7 +166,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         setupActions()
         bindActions()
         personalProfile = PersonalOptionView.selectedLabels
-        print("(FindProductView) : personalProfile = \(personalProfile)")
+//        print("(FindProductView) : personalProfile = \(personalProfile)")
         
         // Olympus Service
         self.notificationCenterAddObserver()
@@ -187,14 +191,14 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     func configure(onCartProducts: [ProductInfo], offCartProducts: [ProductInfo]) {
         self.onCartProducts = onCartProducts
         self.offCartProducts = offCartProducts
-        print("(FindProductView) : onCartProduct")
+        print("(FindProductView) : onCartProduct ----------")
         for item in self.onCartProducts {
-            print("(FindProductView) : ID = \(item.id) // profile = \(item.product_profile) // range = \(item.category_range)")
+            print("(FindProductView) : ID = \(item.id) // profile = \(item.product_profile) // color = \(item.product_color) // num = \(item.category_number) // range = \(item.category_range)")
         }
         
-        print("(FindProductView) : offCartProducts")
+        print("(FindProductView) : offCartProducts ----------")
         for item in self.offCartProducts {
-            print("(FindProductView) : ID = \(item.id) // profile = \(item.product_profile) // range = \(item.category_range)")
+            print("(FindProductView) : ID = \(item.id) // profile = \(item.product_profile) // color = \(item.product_color) // num = \(item.category_number) // range = \(item.category_range)")
         }
     }
     
@@ -204,7 +208,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         categoryDrawed = []
         let mapAndPpScaleValues = mapView.mapAndPpScaleValues
         print("(FindProductView) : plotProduct // mapAndPpScaleValues = \(mapAndPpScaleValues)")
-        print("(FindProductView) : plotProduct // products = \(products)")
+//        print("(FindProductView) : plotProduct // products = \(products)")
         
         var productViews = [UIView]()
         for item in products {
@@ -223,23 +227,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private func makeOnCartUIView(product: ProductInfo, scales: [Double]) -> UIView {
         let categoryColor = product.category_color
         let categoryNumber = product.category_number
-//        var categoryViewColor = UIColor.white
-//        switch(categoryColor) {
-//        case "RED":
-//            categoryViewColor = RED_COLOR
-//        case "GREEN":
-//            categoryViewColor = GREEN_COLOR
-//        case "YELLOW":
-//            categoryViewColor = YELLOW_COLOR
-//        case "BLUE":
-//            categoryViewColor = BLUE_COLOR
-//        case "MAGENTA":
-//            categoryViewColor = MAGENTA_COLOR
-//        case "WHITE":
-//            categoryViewColor = WHITE_COLOR
-//        default:
-//            categoryViewColor = WHITE_COLOR
-//        }
+
         let categoryViewColor = UIColor(hex: categoryColor)
         
         let x = product.category_x
@@ -272,23 +260,6 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private func makeContentsUI(product: ProductInfo) -> (UIColor, String) {
         let categoryColor = product.category_color
         let categoryNumber = String(product.category_number)
-//        var categoryViewColor = UIColor.white
-//        switch(categoryColor) {
-//        case "RED":
-//            categoryViewColor = RED_COLOR
-//        case "GREEN":
-//            categoryViewColor = GREEN_COLOR
-//        case "YELLOW":
-//            categoryViewColor = YELLOW_COLOR
-//        case "BLUE":
-//            categoryViewColor = BLUE_COLOR
-//        case "MAGENTA":
-//            categoryViewColor = MAGENTA_COLOR
-//        case "WHITE":
-//            categoryViewColor = WHITE_COLOR
-//        default:
-//            categoryViewColor = WHITE_COLOR
-//        }
         let categoryViewColor = UIColor(hex: categoryColor)
         
         return (categoryViewColor, categoryNumber)
@@ -375,6 +346,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     
     private func bindActions() {
         headerView.onBackImageViewTapped = { [weak self] in
+            self?.stopService()
             self?.onBackTappedInFindProductView?()
         }
         
@@ -426,18 +398,18 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         
         let loadScale = loadMapScaleFromCache(key: key_header)
         if loadScale.0, let cachedValues = loadScale.1 {
-            print(getLocalTimeString() + " , (FindProductView) cachedValues = \(cachedValues)")
+            print(getLocalTimeString() + " , (FindProductView) : cachedValues = \(cachedValues)")
             mapSettingView.configure(with: cachedValues)
             mapView.mapAndPpScaleValues = cachedValues
             mapView.setIsDefaultScale(flag: false)
         } else {
             let defaultScales = mapView.mapAndPpScaleValues
-            print(getLocalTimeString() + " , (FindProductView) defaultScales = \(defaultScales)")
+            print(getLocalTimeString() + " , (FindProductView) : defaultScales = \(defaultScales)")
             mapSettingView.configure(with: defaultScales)
         }
         
         mapSettingView.onSave = {
-            print(getLocalTimeString() + " , (FindProductView) Save Button Tapped")
+            print(getLocalTimeString() + " , (FindProductView) : Save Button Tapped")
             let currentScales = mapSettingView.scales
             self.saveMapScaleToCache(key: self.key_header, value: currentScales)
             self.mapView.setIsPpHidden(flag: true)
@@ -644,18 +616,33 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         // Off Cart Check
         for product in self.offCartProducts {
             if product.category_number == categoryInfo.number {
-                let ledColor = checkPersonalOption(productProfile: product.product_profile)
-                if let preTime = eslDict[product.id] {
-                    if currentTime - preTime > REQ_LED_TIME {
+                let isPersonalOptionOverlapping = checkPersonalOptionOverlapping(productProfile: product.product_profile)
+                if isPersonalOptionOverlapping {
+                    let ledColor = product.product_color
+                    if let preTime = eslDict[product.id] {
+                        if currentTime - preTime > REQ_LED_TIME {
+                            let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
+                            eslList.append(esl)
+                            eslDict[product.id] = currentTime
+                        }
+                    } else {
                         let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
                         eslList.append(esl)
                         eslDict[product.id] = currentTime
                     }
-                } else {
-                    let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
-                    eslList.append(esl)
-                    eslDict[product.id] = currentTime
                 }
+//                let ledColor = checkPersonalOption(productProfile: product.product_profile)
+//                if let preTime = eslDict[product.id] {
+//                    if currentTime - preTime > REQ_LED_TIME {
+//                        let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
+//                        eslList.append(esl)
+//                        eslDict[product.id] = currentTime
+//                    }
+//                } else {
+//                    let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
+//                    eslList.append(esl)
+//                    eslDict[product.id] = currentTime
+//                }
                 
 //                if self.personalProfile.contains(product.product_profile) {
 //                    if let ledColor = self.profileColorDict[product.product_profile] {
@@ -684,7 +671,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             return ""
         }
         if overlappingValues.count > 1 {
-            return "CYAN"
+            return overlappingColor
         } else {
             let overlappingValue = overlappingValues[0]
             if let ledColor = self.profileColorDict[overlappingValue] {
@@ -692,6 +679,15 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             } else {
                 return defaultColor
             }
+        }
+    }
+    
+    private func checkPersonalOptionOverlapping(productProfile: [String]) -> Bool {
+        let overlappingValues: [String] = self.personalProfile.filter { productProfile.contains($0) }
+        if overlappingValues.isEmpty {
+            return false
+        } else {
+            return true
         }
     }
     

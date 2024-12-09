@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 public class OlympusServiceManager: Observation, StateTrackingObserver, BuildingLevelChangeObserver {
-    public static let sdkVersion: String = "0.2.20"
+    public static let sdkVersion: String = "0.2.24"
     var isSimulationMode: Bool = false
     var isDeadReckoningMode: Bool = false
     var bleFileName: String = ""
@@ -939,7 +939,7 @@ public class OlympusServiceManager: Observation, StateTrackingObserver, Building
                         }
                     }
                 case .failure(_):
-                    print(getLocalTimeString() + " , (Olympus) Warning : Fail RFD Trimming")
+//                    print(getLocalTimeString() + " , (Olympus) Warning : Fail RFD Trimming")
                     let isNeedClearBle = stateManager.checkBleError(olympusResult: self.olympusResult)
                     if (isNeedClearBle) {
                         self.bleAvg = [String: Double]()
@@ -1032,7 +1032,7 @@ public class OlympusServiceManager: Observation, StateTrackingObserver, Building
             displayOutput.velocity = unitDRInfo.velocity * 3.6
             displayOutput.indexTx = unitDRInfo.index
             // 임시
-            print("\(unitDRInfo.index) // \(unitDRInfo.length)")
+
             stateManager.setVariblesWhenIsIndexChanged()
             stackHeadingForCheckCorrection()
             isPossibleHeadingCorrection = checkHeadingCorrection(buffer: headingBufferForCorrection)
@@ -1084,7 +1084,7 @@ public class OlympusServiceManager: Observation, StateTrackingObserver, Building
             if (KF.isRunning && KF.tuFlag && !self.isInRecoveryProcess) {
                 var pathType: Int = 1
                 if (runMode == OlympusConstants.MODE_PDR) { pathType = 0 }
-//                print(getLocalTimeString() + " , (Olympus) Path-Matching : Check Bad Case : isNeedPathTrajMatching = \(isNeedPathTrajMatching) // index = \(unitDRInfoIndex)")
+                print(getLocalTimeString() + " , (Olympus) Path-Matching : Check Bad Case : isNeedPathTrajMatching = \(isNeedPathTrajMatching) // index = \(unitDRInfoIndex)")
                 let kfTimeUpdate = KF.timeUpdate(currentTime: currentTime, recentResult: olympusResult, length: unitUvdLength, diffHeading: diffHeading, isPossibleHeadingCorrection: isPossibleHeadingCorrection, unitDRInfoBuffer: unitDRInfoBuffer, userMaskBuffer: userMaskBufferPathTrajMatching, isNeedPathTrajMatching: isNeedPathTrajMatching, PADDING_VALUES: PADDING_VALUES, mode: runMode)
                 var tuResult = kfTimeUpdate.0
                 let isDidPathTrajMatching: Bool = kfTimeUpdate.1
@@ -2331,7 +2331,7 @@ public class OlympusServiceManager: Observation, StateTrackingObserver, Building
                 }
             }
             
-//            print(getLocalTimeString() + " , (Olympus) Path-Matching : isUseHeading = \(isUseHeading) // isStableMode = \(isStableMode) // isPmFailed = \(isPmFailed)")
+            print(getLocalTimeString() + " , (Olympus) Path-Matching : isUseHeading = \(isUseHeading) // isStableMode = \(isStableMode) // isPmFailed = \(isPmFailed)")
             if (isUseHeading && isStableMode && !self.isPhaseBreak) {
                 let diffX = result.x - temporalResult.x
                 let diffY = result.y - temporalResult.y
@@ -2530,18 +2530,23 @@ public class OlympusServiceManager: Observation, StateTrackingObserver, Building
             return IsNeedPathTrajMatching(turn: false, straight: false)
         }
         
+        var userMaskChecker = [UserMask]()
         if userMaskBuffer.count >= th {
             var diffX: Int = 0
             var diffY: Int = 0
+            var diffH: Double = 0
             var checkCount: Int = 0
             for i in userMaskBuffer.count-(th-1)..<userMaskBuffer.count {
                 if (userMaskBuffer[i].index) > recoveryIndex {
+                    userMaskChecker.append(userMaskBuffer[i])
                     diffX += abs(userMaskBuffer[i-1].x - userMaskBuffer[i].x)
                     diffY += abs(userMaskBuffer[i-1].y - userMaskBuffer[i].y)
+                    diffH += abs(userMaskBuffer[i-1].absolute_heading - userMaskBuffer[i].absolute_heading)
                     checkCount += 1
                 }
             }
-            if diffX == 0 && diffY == 0 && checkCount >= (th-1) {
+            if diffX == 0 && diffY == 0 && diffH == 0 && checkCount >= (th-1) {
+                print(getLocalTimeString() + " , (Olympus) checkIsNeedPathTrajMatching : userMask = \(userMaskChecker)")
                 isNeedPathTrajMatching = true
             }
         }

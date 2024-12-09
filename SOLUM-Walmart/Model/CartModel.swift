@@ -1,7 +1,7 @@
 import Foundation
 
 //let SHOP_PRODUCT_URL = "https://ap-northeast-2.user.warp.tjlabs.dev/2024-12-03/category?sector_id="
-let SHOP_PRODUCT_URL = "https://us-east-1.user.warp.tjlabs.dev/2024-12-05/category?sector_id="
+let SHOP_PRODUCT_URL = "https://us-east-1.user.warp.tjlabs.dev/2024-12-09/category?sector_id="
 
 struct ShopOutput: Codable, Equatable, Hashable {
     var category_list: [ShopCategoryList]
@@ -33,6 +33,7 @@ struct ShopProduct: Codable, Equatable, Hashable {
     var image_url: String
     var esl_id: String
     var esl_duration: String
+    var esl_color: String
 }
 
 // Each Product //
@@ -51,6 +52,7 @@ struct ProductInfo: Codable, Equatable, Hashable {
     var product_price: Double
     var product_url: String
     var product_profile: [String]
+    var product_color: String
 }
 
 struct CategoryInfo: Codable, Equatable, Hashable {

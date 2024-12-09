@@ -219,17 +219,21 @@ class CartView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlow
                 let product_list = category.products
                 for product in product_list {
                     let productEslId = product.esl_id
+                    if productEslId == "0" {
+                        continue
+                    }
                     let productEslDuration = product.esl_duration
                     
                     let productName = product.name
                     let productPrice = product.price
                     let productURL = product.image_url
                     let productProfiles = product.profiles
+                    let productColor = product.esl_color
                     let onCart = product.on_cart
                     
                     let productInfo = ProductInfo(id: productEslId, led_duration: productEslDuration,
                                                   category_name: categoryName, category_number: categoryNumber, category_color: categoryColor, category_x: categoryX, category_y: categoryY, category_range: categoryRange,
-                                                  product_name: productName, product_price: productPrice, product_url: productURL, product_profile: productProfiles)
+                                                  product_name: productName, product_price: productPrice, product_url: productURL, product_profile: productProfiles, product_color: productColor)
                     if onCart {
                         // 카트에 담긴 제품
                         self.onCartProducts.append(productInfo)
