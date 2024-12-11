@@ -20,13 +20,16 @@ class CoordSettingView: UIView {
     private static var savedHeading: Double = 0
     private static var savedUseFixedStep: Bool = false
     private static var savedStepLength: Double = 0.55
+    private static var savedReqTime: Double = 20
     
     var onSave: (() -> Void)?
     var onCancel: (() -> Void)?
     
     private static let coordCacheKey = "CoordCache"
     private static let stepCacheKey = "StepCache"
+    private static let reqTimeCacheKey = "ReqTimeCache"
     static let defaultXYH: [Double] = [5, 5, 90]
+    static let defaultReqTime: Double = 20
     
     private lazy var darkView: UIView = {
         let view = UIView()
@@ -112,6 +115,30 @@ class CoordSettingView: UIView {
         return textField
     }()
     
+    private let reqTimeStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 10
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    private let reqTimeLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Re-on Time"
+        label.font = UIFont.pretendardBold(size: 18)
+        label.textColor = .black
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private lazy var reqTimeTextField: UITextField = {
+        let textField = createStyledTextField(placeholder: "Value")
+        textField.isEnabled = true
+        return textField
+    }()
+    
     private lazy var buttonStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -182,7 +209,7 @@ class CoordSettingView: UIView {
         contentView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.equalToSuperview().inset(30)
-            make.height.equalTo(160)
+            make.height.equalTo(200)
         }
         
         contentView.addSubview(buttonStackView)
@@ -191,9 +218,19 @@ class CoordSettingView: UIView {
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(30)
         }
+        
+        contentView.addSubview(reqTimeStackView)
+        reqTimeStackView.snp.makeConstraints { make in
+            make.bottom.equalTo(buttonStackView.snp.top).inset(-10)
+            make.leading.trailing.equalToSuperview().inset(10)
+            make.height.equalTo(40)
+        }
+        reqTimeStackView.addArrangedSubview(reqTimeLabel)
+        reqTimeStackView.addArrangedSubview(reqTimeTextField)
+        
         contentView.addSubview(stepView)
         stepView.snp.makeConstraints { make in
-            make.bottom.equalTo(buttonStackView.snp.top).inset(-10)
+            make.bottom.equalTo(reqTimeStackView.snp.top).inset(-10)
             make.leading.trailing.equalToSuperview().inset(10)
             make.height.equalTo(60)
         }
@@ -212,7 +249,6 @@ class CoordSettingView: UIView {
         fixedStepLengthStackView.addArrangedSubview(fixedStepLengthLabel)
         fixedStepLengthStackView.addArrangedSubview(fixedStepLengthTextField)
         stepStackView.addArrangedSubview(fixedStepLengthStackView)
-        
         
         buttonStackView.addArrangedSubview(saveButton)
         buttonStackView.addArrangedSubview(cancelButton)
@@ -236,6 +272,7 @@ class CoordSettingView: UIView {
         yTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
         headingTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
         fixedStepLengthTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+        reqTimeTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
     }
     
     
@@ -251,6 +288,8 @@ class CoordSettingView: UIView {
                 CoordSettingView.savedHeading = Double(textField.text ?? "") ?? 0
             } else if textField == self.fixedStepLengthTextField {
                 CoordSettingView.savedStepLength = Double(textField.text ?? "") ?? 0
+            } else if textField == self.reqTimeTextField {
+                CoordSettingView.savedReqTime = Double(textField.text ?? "") ?? 0
             }
         }
     }
@@ -260,7 +299,7 @@ class CoordSettingView: UIView {
         xTextField.text = String(CoordSettingView.savedStartX)
         yTextField.text = String(CoordSettingView.savedStartY)
         headingTextField.text = String(CoordSettingView.savedHeading)
-        
+        reqTimeTextField.text = String(CoordSettingView.savedReqTime)
     }
     
     private func applyCachedValues() {
@@ -273,6 +312,9 @@ class CoordSettingView: UIView {
         fixedStepSetSwitch.isOn = cachedStepValues.isUseFixedStep
         fixedStepLengthTextField.text = String(cachedStepValues.stepLength)
         fixedStepLengthTextField.isEnabled = cachedStepValues.isUseFixedStep
+        
+        let cachedReqTime = CoordSettingView.loadEslReOnTimeFromCache()
+        reqTimeTextField.text = String(cachedReqTime)
     }
     
     @objc private func dismissDialog() {
@@ -295,6 +337,10 @@ class CoordSettingView: UIView {
         let stepLength = Double(fixedStepLengthTextField.text ?? "") ?? 0
         CoordSettingView.saveStepInfoToCache(isUseFixedStep: isUseFixedStep, stepLength: stepLength)
         
+        
+        let reqTime = Double(reqTimeTextField.text ?? "") ?? 0
+        CoordSettingView.saveEslReOnTimeToCache(reqTime: reqTime)
+        
         onSave?()
     }
     
@@ -310,6 +356,21 @@ class CoordSettingView: UIView {
             return (false, 0)
         }
         return (isUseFixedStep, stepLength)
+    }
+    
+    static func saveEslReOnTimeToCache(reqTime: Double) {
+        let cache = reqTime
+        UserDefaults.standard.set(cache, forKey: reqTimeCacheKey)
+        print("(CoordSettingView) : save ESL Re-on Time \(cache)")
+    }
+
+    static func loadEslReOnTimeFromCache() -> Double {
+        guard let loadedReqTime = UserDefaults.standard.double(forKey: reqTimeCacheKey) as? Double else {
+            print("(CoordSettingView) : load ESL Re-on Time \(defaultReqTime) // default")
+            return defaultReqTime
+        }
+        print("(CoordSettingView) : load ESL Re-on Time \(loadedReqTime) // loaded")
+        return loadedReqTime
     }
     
     static func saveCoordToCache(x: Double, y: Double, heading: Double) {

@@ -148,15 +148,15 @@ public class NetworkManager {
         dataTask.resume()
     }
     
-    func putESL(url: String, input: ESL_RUN_INPUT, completion: @escaping (Int, String) -> Void) {
+    func putESL(url: String, input: ESL_RUN_INPUT, completion: @escaping (Int, String, ESL_RUN_INPUT) -> Void) {
         let token = TokenInfo.token
         if token == "" {
-            completion(401, "Invalid Token")
+            completion(401, "Invalid Token", input)
             return
         }
         // Configure the URL components and request
         guard let urlComponents = URLComponents(string: url), let url = urlComponents.url else {
-            completion(400, "Invalid URL")
+            completion(400, "Invalid URL", input)
             return
         }
 
@@ -165,7 +165,7 @@ public class NetworkManager {
 
         // Encode the input as JSON
         guard let encodingData = JSONConverter.encodeJson(param: input) else {
-            completion(400, "Invalid input")
+            completion(400, "Invalid input", input)
             return
         }
         requestURL.httpBody = encodingData
@@ -193,13 +193,13 @@ public class NetworkManager {
         let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
             // Handle errors
             if let error = error {
-                completion(500, error.localizedDescription)
+                completion(500, error.localizedDescription, input)
                 return
             }
 
             // Check the response status
             guard let httpResponse = response as? HTTPURLResponse else {
-                completion(500, "Invalid response")
+                completion(500, "Invalid response", input)
                 return
             }
 
@@ -207,19 +207,19 @@ public class NetworkManager {
             let successRange = 200..<300
 
             if !successRange.contains(statusCode) {
-                completion(statusCode, HTTPURLResponse.localizedString(forStatusCode: statusCode))
+                completion(statusCode, HTTPURLResponse.localizedString(forStatusCode: statusCode), input)
                 return
             }
 
             // Parse the response data
             guard let responseData = data, let resultData = String(data: responseData, encoding: .utf8) else {
-                completion(statusCode, "No response data")
+                completion(statusCode, "No response data", input)
                 return
             }
 
             // Return the result on the main thread
             DispatchQueue.main.async {
-                completion(statusCode, resultData)
+                completion(statusCode, resultData, input)
             }
         })
 

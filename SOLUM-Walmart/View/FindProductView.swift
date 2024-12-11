@@ -19,20 +19,22 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             let userCoord = [result.x, result.y, result.absolute_heading]
             let nearbyCategories = checkNearbyCategories(user: userCoord)
             
-            if !nearbyCategories.isEmpty {
+//            if !nearbyCategories.isEmpty {
 //                print("(FindProductView) : Matching Category ---------------")
-            }
+//            }
+            
             for nearbyCategory in nearbyCategories {
 //                print("(FindProductView) : Matching Category \(nearbyCategory.number)")
                 let validESLs = checkMatchingProducts(categoryInfo: nearbyCategory)
-                if !validESLs.0.isEmpty {
+//                if !validESLs.0.isEmpty {
 //                    print("(FindProductView) : ESL for LED")
-                    for item in validESLs.0 {
+//                    for item in validESLs.0 {
 //                        print("(FindProductView) : ESL ID = \(item.id) // ESL Color = \(item.led_color)")
-                    }
+//                    }
+//                }
+                if !validESLs.0.isEmpty {
+                    activateValidESLs(validESLs: validESLs.0)
                 }
-                activateValidESLs(validESLs: validESLs.0)
-                
                 
                 let validProducts = checkMatchingProductForContents(categoryInfo: nearbyCategory, user: userCoord)
                 for product in validProducts {
@@ -56,9 +58,10 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private let overlappingColor = "CYAN"
     private let profileColorDict: [String: String] = ["Vegan":"GREEN", "Gluten Free":"RED", "Lactose Free":"YELLOW", "Sugar Free":"MAGENTA"]
     var eslDict = [String: Double]()
+    var networkDebugString: String = ""
     var productDict = [String: Double]()
     let REQ_DISTANCE: Double = 2.0
-    let REQ_LED_TIME: Double = 20*1000
+    var REQ_LED_TIME: Double = 20*1000
     
     private let backgroundView = BackgroundView()
     private let headerView = HeaderView(title: "Find Product")
@@ -166,6 +169,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         setupActions()
         bindActions()
         personalProfile = PersonalOptionView.selectedLabels
+        setEslReOnTime()
 //        print("(FindProductView) : personalProfile = \(personalProfile)")
         
         // Olympus Service
@@ -184,6 +188,7 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     }
     
     deinit {
+        self.runWhenGoBack()
         stopService()
         self.notificationCenterRemoveObserver()
     }
@@ -191,14 +196,18 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     func configure(onCartProducts: [ProductInfo], offCartProducts: [ProductInfo]) {
         self.onCartProducts = onCartProducts
         self.offCartProducts = offCartProducts
-        print("(FindProductView) : onCartProduct ----------")
+//        print("(FindProductView) : onCartProduct ----------")
         for item in self.onCartProducts {
-            print("(FindProductView) : ID = \(item.id) // profile = \(item.product_profile) // color = \(item.product_color) // num = \(item.category_number) // range = \(item.category_range)")
+            let categoryInfo = CategoryInfo(name: item.category_name, number: item.category_number, color: item.category_color, x: item.category_x, y: item.category_y, range: item.category_range)
+            categoryList.insert(categoryInfo)
+//            print("(FindProductView) : ID = \(item.id) // profile = \(item.product_profile) // color = \(item.product_color) // num = \(item.category_number) // range = \(item.category_range)")
         }
         
-        print("(FindProductView) : offCartProducts ----------")
+//        print("(FindProductView) : offCartProducts ----------")
         for item in self.offCartProducts {
-            print("(FindProductView) : ID = \(item.id) // profile = \(item.product_profile) // color = \(item.product_color) // num = \(item.category_number) // range = \(item.category_range)")
+            let categoryInfo = CategoryInfo(name: item.category_name, number: item.category_number, color: item.category_color, x: item.category_x, y: item.category_y, range: item.category_range)
+            categoryList.insert(categoryInfo)
+//            print("(FindProductView) : ID = \(item.id) // profile = \(item.product_profile) // color = \(item.product_color) // num = \(item.category_number) // range = \(item.category_range)")
         }
     }
     
@@ -217,8 +226,6 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
                 let productView = makeOnCartUIView(product: item, scales: mapAndPpScaleValues)
                 productViews.append(productView)
                 categoryDrawed.append(categoryNumber)
-                let categoryInfo = CategoryInfo(name: item.category_name, number: item.category_number, color: item.category_color, x: item.category_x, y: item.category_y, range: item.category_range)
-                categoryList.insert(categoryInfo)
             }
             mapView.plotUnitUsingCoord(unitViews: productViews)
         }
@@ -347,7 +354,12 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
     private func bindActions() {
         headerView.onBackImageViewTapped = { [weak self] in
             self?.stopService()
+            self?.runWhenGoBack()
             self?.onBackTappedInFindProductView?()
+        }
+        
+        headerView.onSearchImageViewTapped = {
+            self.showNetworkDebugView()
         }
         
         headerView.onMenuImageViewTapped = {
@@ -361,6 +373,10 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         headerView.onPersonImageViewTapped = {
             self.showCoordSettingView()
         }
+    }
+    
+    private func runWhenGoBack() {
+        self.networkDebugString = ""
     }
     
     private func showNearbyProduct(categoryUI: (UIColor, String), title: String, contents: String) {
@@ -425,6 +441,17 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         }
     }
     
+    private func showNetworkDebugView() {
+        let networkDebugView = NetworkDebugView(debugString: self.networkDebugString)
+        
+        addSubview(networkDebugView)
+        networkDebugView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        networkDebugView.onBack = { }
+    }
+    
     private func showCoordSettingView() {
         let coordSettingView = CoordSettingView()
         coordSettingView.alpha = 0.5
@@ -440,6 +467,9 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             
             let cachedStepLength = CoordSettingView.loadStepInfoFromCache()
             print("Saved Step: isFixed= \(cachedStepLength.isUseFixedStep), length= \(cachedStepLength.stepLength)")
+            
+            let cachedReqTime = CoordSettingView.loadEslReOnTimeFromCache()
+            print("Saved ESL Re-on Time: reqTime = \(cachedReqTime)")
         }
     }
     
@@ -563,6 +593,12 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
         })
     }
     
+    private func setEslReOnTime() {
+        let cachedReqTime = CoordSettingView.loadEslReOnTimeFromCache()
+        self.REQ_LED_TIME = cachedReqTime*1000
+        print("(FindProductView) : REQ_LED_TIME = \(REQ_LED_TIME)")
+    }
+    
     private func stopService() {
         serviceManager.removeObserver(self)
     }
@@ -631,34 +667,6 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
                         eslDict[product.id] = currentTime
                     }
                 }
-//                let ledColor = checkPersonalOption(productProfile: product.product_profile)
-//                if let preTime = eslDict[product.id] {
-//                    if currentTime - preTime > REQ_LED_TIME {
-//                        let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
-//                        eslList.append(esl)
-//                        eslDict[product.id] = currentTime
-//                    }
-//                } else {
-//                    let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
-//                    eslList.append(esl)
-//                    eslDict[product.id] = currentTime
-//                }
-                
-//                if self.personalProfile.contains(product.product_profile) {
-//                    if let ledColor = self.profileColorDict[product.product_profile] {
-//                        if let preTime = eslDict[product.id] {
-//                            if currentTime - preTime > REQ_LED_TIME {
-//                                let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
-//                                eslList.append(esl)
-//                                eslDict[product.id] = currentTime
-//                            }
-//                        } else {
-//                            let esl = ESL(id: product.id, category_x: product.category_x, category_y: product.category_y, product_name: product.product_name, led_color: ledColor, led_duration: product.led_duration)
-//                            eslList.append(esl)
-//                            eslDict[product.id] = currentTime
-//                        }
-//                    }
-//                }
             }
         }
         
@@ -726,8 +734,16 @@ class FindProductView: UIView, Observer, MapSettingViewDelegate, MapViewForScale
             let ledBlink = ledBlink(labelCode: esl.id, color: esl.led_color, duration: esl.led_duration, patternId: 0, multiLed: false)
             ledBlinkList.append(ledBlink)
         }
+        
         let eslInput = ESL_RUN_INPUT(ledBlinkList: ledBlinkList)
-        NetworkManager.shared.putESL(url: SOLUM_ESL_URL, input: eslInput, completion: { [self] statusCode, returnedString in })
+        NetworkManager.shared.putESL(url: SOLUM_ESL_URL, input: eslInput, completion: { [self] statusCode, returnedString, postInput in
+            var eslIdInfo: String = "\(statusCode)"
+            let ledBlinkList = postInput.ledBlinkList
+            for led in ledBlinkList {
+                eslIdInfo += ",\(led.labelCode)(\(led.color))"
+            }
+            networkDebugString += eslIdInfo + "\n"
+        })
     }
     
     private func makeProductContents(user: [Double], product: ProductInfo) -> String {
